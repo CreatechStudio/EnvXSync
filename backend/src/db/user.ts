@@ -1,17 +1,18 @@
 import {pgTable, text, timestamp} from "drizzle-orm/pg-core";
+import {randomUUID} from "crypto";
+import {sql} from "drizzle-orm";
 
 export const userTable = pgTable(
     'user',
     {
         id: text('id').primaryKey()
-            // .$defaultFn(() => generate_uuid())
-        ,
+            .$defaultFn(() => randomUUID()),
         name: text('name').notNull(),
         email: text('email').notNull().unique(),
-        password: text('password'),
+        password: text('password').default(sql`NULL`),
         createdAt: timestamp('created_at').notNull().defaultNow(),
         updatedAt: timestamp('updated_at').notNull().defaultNow(),
-        oidcID: text('oidc_id').unique(),
-        groupIDs: text('group_ids').array().notNull().default([]),
+        oidcID: text('oidc_id').unique().default(sql`NULL`),
+        groupIDs: text('group_ids').array().notNull().default(sql`'{}'::text[]`),
     }
 );
