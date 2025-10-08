@@ -35,7 +35,7 @@ npm install
 ### Run the development server
 
 ```bash
-npm run dev
+npm run test
 ```
 
 ### Setup pnpm (optional)
