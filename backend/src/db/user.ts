@@ -14,5 +14,6 @@ export const userTable = pgTable(
         updatedAt: timestamp('updated_at').notNull().defaultNow(),
         oidcID: text('oidc_id').unique().default(sql`NULL`),
         groupIDs: text('group_ids').array().notNull().default(sql`'{}'::text[]`),
+        avatarURL: text('avatar_url').default(sql`NULL`),
     }
 );
