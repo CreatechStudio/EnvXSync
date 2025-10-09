@@ -1,5 +1,3 @@
-import {EnvVar} from "./env_var";
-
 export interface Project {
     id: string;
     name: string;
@@ -7,5 +5,5 @@ export interface Project {
     createdAt: Date;
     updatedAt: Date;
     creatorID: string;
-    envVars: EnvVar[];
+    envVarIDs: string[];
 }

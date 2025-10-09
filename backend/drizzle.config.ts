@@ -14,6 +14,10 @@ configDotenv({
 export default defineConfig({
     out: './drizzle',
     schema: [
+        './src/db/agent.ts',
+        './src/db/env_var.ts',
+        './src/db/permission.ts',
+        './src/db/project.ts',
         './src/db/user.ts',
     ],
     dialect: 'postgresql',

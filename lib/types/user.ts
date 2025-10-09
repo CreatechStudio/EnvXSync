@@ -6,6 +6,7 @@ export interface User {
     createdAt: Date;
     updatedAt: Date;
     oidcID?: string;
+    role: 'admin' | 'user';
     groupIDs: string[];
     avatarURL?: string;
 }

@@ -1,11 +1,13 @@
 export interface Permission {
     id: string;
     name: string;
+    description?: string;
+    priority: number;
     userIDs: string[];
     groupIDs: string[];
     createdAt: Date;
     updatedAt: Date;
     resourceType: 'project' | 'agent' | 'user' | 'group';
     resourceIDs: string[];
-    level: 'read' | 'write' | 'admin';
+    level: 'deny' | 'read' | 'write' | 'admin';
 }

@@ -14,5 +14,5 @@ if (process.env.ENV === "development") {
 app.listen(process.env.PORT ?? 6001);
 
 console.log(
-    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+    `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port} \n📚 Swagger UI: http://${app.server?.hostname}:${app.server?.port}/swagger`
 );

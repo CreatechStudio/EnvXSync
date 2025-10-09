@@ -1,7 +1,7 @@
 export interface Agent {
     id: string;
     name: string;
-    status: 'online' | 'offline' | 'error';
+    status: 'pending' | 'online' | 'offline' | 'error';
     lastSeen: Date;
     createdAt: Date;
     updatedAt: Date;
@@ -10,6 +10,7 @@ export interface Agent {
     arch?: string;
     version?: string;
     projectIDs: string[];
+    taskIDs: string[];
 }
 
 export interface AgentTask {
