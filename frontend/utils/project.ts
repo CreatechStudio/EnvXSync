@@ -1,7 +1,34 @@
 import {Project} from "../../lib/types/project";
 import {Agent} from "../../lib/types/agent";
 import {SAMPLE_AGENTS} from "@/utils/agent";
+import {EnvVar} from "../../lib/types/env_var";
 
+const ENV_VAR_SAMPLE_DATA: EnvVar[] = [
+    {
+        id: "1",
+        key: "EXTERNAL_URL",
+        value: "https://test.example.com",
+        isSecret: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: "2",
+        key: "API_KEY",
+        value: "1234567890abcdef",
+        isSecret: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: "3",
+        key: "DATABASE_URL",
+        value: "postgres://user:password@localhost:5432/dbname",
+        isSecret: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+];
 
 const PROJECT_SAMPLE_DATA: Project[] = [
     {
@@ -11,29 +38,7 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         creatorID: "123",
-        envVars: [
-            {
-                key: "EXTERNAL_URL",
-                value: "https://test.example.com",
-                isSecret: false,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            },
-            {
-                key: "API_KEY",
-                value: "1234567890abcdef",
-                isSecret: true,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            },
-            {
-                key: "DATABASE_URL",
-                value: "postgres://user:password@localhost:5432/dbname",
-                isSecret: true,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            }
-        ]
+        envVarIDs: ["1", "2", "3"]
     },
     {
         id: "2",
@@ -42,7 +47,7 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2025-10-01T10:00:00Z'),
         creatorID: "234",
-        envVars: []
+        envVarIDs: ["1", "2", "3"]
     },
     {
         id: "3",
@@ -51,7 +56,7 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2025-03-01T10:00:00Z'),
         creatorID: "234",
-        envVars: []
+        envVarIDs: []
     },
     {
         id: "4",
@@ -60,7 +65,7 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2024-10-01T10:00:00Z'),
         creatorID: "234",
-        envVars: []
+        envVarIDs: []
     },
     {
         id: "5",
@@ -69,7 +74,7 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2023-10-01T10:00:00Z'),
         creatorID: "234",
-        envVars: []
+        envVarIDs: []
     }
 ];
 
@@ -84,4 +89,25 @@ export function getProjectById(projectID: string): Project | null {
 
 export function getProjectAgents(projectID: string): Agent[] {
     return SAMPLE_AGENTS.filter((agent: Agent) => agent.projectIDs.includes(projectID));
+}
+
+export function getEnvVarsByIds(ids: string[]): EnvVar[] {
+    const envs = ENV_VAR_SAMPLE_DATA.filter((envVar) => ids.includes(envVar.id));
+    const envsCopy: EnvVar[] = [];
+    envs.forEach(envVar => {
+        if (envVar.isSecret) {
+            envsCopy.push({...envVar, value: "********"});
+        } else {
+            envsCopy.push({...envVar});
+        }
+    });
+    return envsCopy;
+}
+
+export function getEnvVarSecretValueById(id: string): string {
+    const env = ENV_VAR_SAMPLE_DATA.find((envVar) => envVar.id === id);
+    if (env && env.isSecret) {
+        return env.value;
+    }
+    return "";
 }

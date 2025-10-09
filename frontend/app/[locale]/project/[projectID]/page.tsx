@@ -3,7 +3,7 @@
 import {useEffect, useState} from "react";
 import {Project} from "../../../../../lib/types/project";
 import Loading from "@/components/loading";
-import {getProjectAgents, getProjectById} from "@/utils/project";
+import {getEnvVarsByIds, getProjectAgents, getProjectById} from "@/utils/project";
 import {useParams} from "next/navigation";
 import {Alert} from "@heroui/alert";
 import {Button} from "@heroui/button";
@@ -86,7 +86,7 @@ export function ProjectDisplay({
                     </Tooltip>
                 </div>
 
-                <EnvEditTable envVars={project.envVars}/>
+                <EnvEditTable envVars={getEnvVarsByIds(project.envVarIDs)}/>
             </div>
 
             <div className="flex flex-col gap-6">

@@ -9,7 +9,8 @@ export const SAMPLE_AGENTS: Agent[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         projectIDs: ["1", "2"],
-        ipAddress: "10.217.35.29"
+        ipAddress: "10.217.35.29",
+        taskIDs: []
     },
     {
         id: "2",
@@ -19,7 +20,8 @@ export const SAMPLE_AGENTS: Agent[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         projectIDs: ["1", "2"],
-        ipAddress: "120.117.52.173"
+        ipAddress: "120.117.52.173",
+        taskIDs: []
     },
     {
         id: "3",
@@ -28,7 +30,8 @@ export const SAMPLE_AGENTS: Agent[] = [
         lastSeen: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
-        projectIDs: ["1", "2"]
+        projectIDs: ["1", "2"],
+        taskIDs: []
     },
     {
         id: "4",
@@ -37,6 +40,7 @@ export const SAMPLE_AGENTS: Agent[] = [
         lastSeen: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
-        projectIDs: ["1", "2"]
+        projectIDs: ["1", "2"],
+        taskIDs: []
     }
 ];
