@@ -7,6 +7,7 @@ export interface User {
     updatedAt: Date;
     oidcID?: string;
     groupIDs: string[];
+    avatarURL?: string;
 }
 
 export interface UserGroup {

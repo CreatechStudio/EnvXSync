@@ -1,4 +1,5 @@
 {
+  ":": ": ",
   "username": "Username",
   "password": "Password",
   "login": "Login",
@@ -7,5 +8,26 @@
   "email": "Email",
   "new-admin": "New Admin",
   "language": "Language",
-  "home": "Home"
+  "home": "Home",
+  "Last Update": "Last Update",
+  "Edit": "Edit",
+  "New Project": "New Project",
+  "Projects": "Projects",
+  "project": "Project",
+  "Key": "Key",
+  "Value": "Value",
+  "Actions": "Actions",
+  "Is Secret": "Is Secret",
+  "View Secret": "View Secret",
+  "Hide Secret": "Hide Secret",
+  "Delete": "Delete",
+  "New Environment Variable": "New Environment Variable",
+  "Environment Variables": "Environment Variables",
+  "Last Seen": "Last Seen",
+  "Online": "Online",
+  "Offline": "Offline",
+  "Error": "Error",
+  "Status": "Status",
+  "Agents": "Agents",
+  "Upgrade to Pro": "Upgrade to Pro"
 }
