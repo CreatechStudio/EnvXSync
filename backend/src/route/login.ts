@@ -5,6 +5,7 @@ import {UserRuntime} from "../runtime/user";
 import {User} from "../../../lib/types/user";
 import dotenv from "dotenv";
 import {randomUUID} from "crypto";
+import dayjs from "dayjs";
 
 dotenv.config()
 export const JWT_SECRET = process.env.EXS_JWT_SECRET || randomUUID()
@@ -20,16 +21,17 @@ export const LoginRoute = new Elysia()
     .group('login', (app) => app
         .post('verify', async ({ jwt, body }) => {
             try {
-                let verifyAnswer = await jwt.verify(body.cookie.toString() || '') as Boolean;
-                if (verifyAnswer) {
+                const token = body.cookie.toString() || '';
+                const payload = await jwt.verify(token) as { exp?: number };
+                if (payload && payload.exp && payload.exp > dayjs().unix()) {
                     return {
                         success: true,
-                        data: verifyAnswer,
+                        data: true,
                     } as ApiResponse<Boolean>;
                 } else {
                     return {
                         success: false,
-                        error: 'Invalid token',
+                        error: 'Token expired or invalid',
                     } as ApiResponse;
                 }
             } catch (e) {
@@ -48,7 +50,11 @@ export const LoginRoute = new Elysia()
                 let authorizeAnswer = await user.doLogin(email, passwordHash);
                 if (authorizeAnswer) {
                     auth.set({
-                        value: await jwt.sign({id: authorizeAnswer.id, email: authorizeAnswer.email}),
+                        value: await jwt.sign({
+                            id: authorizeAnswer.id,
+                            email: authorizeAnswer.email,
+                            exp: dayjs().add(5, 'day').unix()
+                        }),
                         httpOnly: true,
                         maxAge: 5 * 86400,
                     })
