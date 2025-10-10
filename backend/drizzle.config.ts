@@ -16,6 +16,7 @@ export default defineConfig({
     schema: [
         './src/db/agent.ts',
         './src/db/env_var.ts',
+        './src/db/group.ts',
         './src/db/permission.ts',
         './src/db/project.ts',
         './src/db/user.ts',
