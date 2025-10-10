@@ -1,0 +1,110 @@
+// @ts-ignore
+import base64 from "base-64";
+import {db} from "../db";
+import {userTable} from "../db/user";
+import {sql} from "drizzle-orm";
+import {User, UserGroup} from "../../../lib/types/user";
+import {groupTable} from "../db/group";
+
+export class UserRuntime {
+    async _isFirstUser() {
+        const adminUser = await db.select().from(userTable).where(sql`${userTable.role} = 'admin'`).limit(1);
+        return adminUser.length === 0;
+    }
+
+    async _isFirstGroup() {
+        const group = await db.select().from(groupTable);
+        return group.length === 0;
+    }
+
+    async fetch(cookie: string) {
+        try {
+            let decodedId: string = JSON.parse(base64.decode(cookie.split(".")[1])).id;
+            let me = await db
+                .select()
+                .from(userTable)
+                .where(sql`${userTable.id} = ${decodedId}`)
+                .limit(1)
+                .then(res => res[0]) as User;
+            if (me) me.password = "";
+            return me
+        } catch (e) {
+            return undefined;
+        }
+    }
+
+    async doLogin(email: string, passwordHash: string) {
+        const user = await db
+            .select()
+            .from(userTable)
+            .where(sql`${userTable.email} = ${email} and ${userTable.password} = ${passwordHash}`)
+            .limit(1)
+            .then(res => res[0]) as User;
+        if (!user) {
+            throw "Email or password is incorrect";
+        }
+        if (user) user.password = "";
+        return user;
+    }
+
+    async newUserGroup(name: string, description?: string, id?: string) {
+        let group;
+        try {
+            if (id) {
+                group = await db.insert(groupTable).values({
+                    id: id,
+                    name: name,
+                    description: description,
+                }).returning().then(res => res[0]) as UserGroup;
+                return group;
+            } else {
+                group = await db.insert(groupTable).values({
+                    name: name,
+                    description: description,
+                }).returning().then(res => res[0]) as UserGroup;
+            }
+        } catch (e) {
+            throw "Failed to create user group";
+        }
+        return group;
+    }
+
+    async newPasswordUser(name: string, email: string, passwordHash: string) {
+        const shouldBeAdmin = await this._isFirstUser();
+        try {
+            let newUser = await db.insert(userTable).values({
+                name: name,
+                email: email,
+                password: passwordHash,
+                role: shouldBeAdmin ? 'admin' : 'user',
+                groupIDs: ["0"]
+            }).returning().then(res => res[0]) as User;
+            if (await this._isFirstGroup()) {
+                await this.newUserGroup("Default", "Default user group", "0");
+            }
+            return newUser;
+        } catch (e) {
+            // @ts-ignore
+            if (e.cause?.code === "23505") {
+                throw "Email already exists";
+            }
+            throw "Failed to create user";
+        }
+    }
+
+    async updateAvatar(userId: string, avatarUrl: string) {
+        try {
+            let user = await db
+                .update(userTable)
+                .set({
+                    avatarURL: avatarUrl
+                })
+                .where(sql`${userTable.id} = ${userId}`)
+                .returning()
+                .then(res => res[0]) as User;
+            return user;
+        } catch (e) {
+            throw "Failed to update avatar";
+        }
+    }
+}
