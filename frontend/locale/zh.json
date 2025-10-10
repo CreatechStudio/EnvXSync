@@ -31,5 +31,7 @@
   "Agents": "Agents",
   "Add Agent": "添加 Agent",
   "Upgrade to Pro": "升级到专业版",
-  "Loading...": "加载中..."
+  "Loading...": "加载中...",
+  "Pending": "等待中",
+  "OS": "操作系统"
 }

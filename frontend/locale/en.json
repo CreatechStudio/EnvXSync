@@ -30,5 +30,7 @@
   "Status": "Status",
   "Agents": "Agents",
   "Upgrade to Pro": "Upgrade to Pro",
-  "Loading...": "Loading..."
+  "Loading...": "Loading...",
+  "Pending": "Pending",
+  "OS": "OS"
 }

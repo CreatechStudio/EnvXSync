@@ -118,7 +118,7 @@ export function ProjectDisplay({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12">
                     {agents.map((agent) => (
-                        <AgentCard agent={agent} key={agent.id}/>
+                        <AgentCard agent={agent} key={agent.id} showDelete/>
                     ))}
                 </div>
             </div>
