@@ -37,9 +37,9 @@ function MyAvatar(
             name={name}
             size={size}
             icon={icon ? icon : <LuUser size={getSize(size)}/>}
-            className={`bg-zinc-200 ${size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-medium"} ${className || ""}`}
+            className={`bg-zinc-200 dark:bg-zinc-700 ${size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-medium"} ${className || ""}`}
         />
-    )
+    );
 }
 
 export default function AvatarDisplay({
@@ -57,7 +57,7 @@ export default function AvatarDisplay({
 
     return (
         <Button
-            className="p-0 bg-zinc-200 disabled:opacity-100"
+            className="p-0 bg-zinc-200 dark:bg-zinc-700 disabled:opacity-100"
             radius="full"
             variant="light"
             isIconOnly
