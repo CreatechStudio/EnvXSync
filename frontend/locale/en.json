@@ -5,7 +5,7 @@
   "Confirm Password": "Confirm Password",
   "login": "Login",
   "logout": "Logout",
-  "next": "Next",
+  "Next": "Next",
   "email": "Email",
   "new-admin": "New Admin",
   "language": "Language",
@@ -34,5 +34,9 @@
   "Loading...": "Loading...",
   "Pending": "Pending",
   "OS": "OS",
-  "Register New User": "Register New User"
+  "Register New User": "Register New User",
+  "Activate By Email": "Activate By Email",
+  "Resend Code": "Resend Code",
+  "Activate & Login": "Activate & Login",
+  "Please enter the 6-digit code sent to your email.": "Please enter the 6-digit code sent to your email."
 }

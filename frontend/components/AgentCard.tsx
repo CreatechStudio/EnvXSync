@@ -6,6 +6,7 @@ import {getRelativeTime} from "@/utils/time";
 import {Agent} from "../../lib/types/agent";
 import {useCurrentLocale, useI18n} from "@/locale/client";
 import OSIcon from "@/components/OSIcon";
+import {useTransitionRouter} from "next-transition-router";
 
 export default function AgentCard({
     agent,
@@ -16,6 +17,8 @@ export default function AgentCard({
     onDelete?: () => void,
     showDelete?: boolean
 }) {
+    const router = useTransitionRouter();
+
     const t = useI18n();
     const locale = useCurrentLocale();
 
@@ -26,7 +29,7 @@ export default function AgentCard({
     }
 
     function handlePress() {
-        window.location.href = `/agent/${agent.id}`;
+        router.push(`/agents/${agent.id}`);
     }
 
     return (

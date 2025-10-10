@@ -5,12 +5,13 @@ import {Input} from "@heroui/input";
 import {Form} from "@heroui/form";
 import {Button} from "@heroui/button";
 import {useI18n} from "@/locale/client";
-import {Avatar} from "@heroui/avatar";
 import {useState} from "react";
-import { LuUser } from "react-icons/lu";
 import AvatarDisplay from "@/components/AvatarDisplay";
+import {useTransitionRouter} from "next-transition-router";
 
 export default function RegisterPage() {
+    const router = useTransitionRouter();
+
     const t = useI18n();
     const [avatarUrl, setAvatarUrl] = useState("");
     const [username, setUsername] = useState("");
@@ -19,7 +20,7 @@ export default function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     function handleSubmit() {
-        console.log("submitted");
+        router.push("/activate/email");
     }
 
     return (
@@ -43,33 +44,33 @@ export default function RegisterPage() {
                                 label={t('username')}
                                 type="text"
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                onValueChange={setUsername}
                             />
                             <Input
                                 label={t('email')}
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onValueChange={setEmail}
                             />
                         </div>
                         <Input
                             label={t('Password')}
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onValueChange={setPassword}
                         />
                         <Input
                             label={t('Confirm Password')}
                             type="password"
                             value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onValueChange={setConfirmPassword}
                         />
                     </div>
                 </CardBody>
                 <CardFooter>
                     <div className="w-full flex flex-row-reverse">
-                        <Button type="submit" variant="faded">
-                            {t('next')}
+                        <Button type="submit" color="primary">
+                            {t('Next')}
                         </Button>
                     </div>
                 </CardFooter>

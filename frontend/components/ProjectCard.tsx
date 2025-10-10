@@ -1,20 +1,22 @@
 import {Card, CardBody, CardHeader} from "@heroui/card";
-import {Button} from "@heroui/button";
-import {LuClock2, LuPencil} from "react-icons/lu";
+import {LuClock2} from "react-icons/lu";
 import {getRelativeTime} from "@/utils/time";
 import {Project} from "../../lib/types/project";
 import {useCurrentLocale, useI18n} from "@/locale/client";
+import {useTransitionRouter} from "next-transition-router";
 
 export default function ProjectCard({
     project
 } : {
     project: Project
 }   ) {
+    const router = useTransitionRouter();
+
     const locale = useCurrentLocale();
     const t = useI18n();
 
     function handleClickProject(projectID: string) {
-        window.location.href = `/project/${projectID}`;
+        router.push(`/project/${projectID}`);
     }
 
     return (

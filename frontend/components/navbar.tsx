@@ -1,7 +1,6 @@
 import {Navbar as HeroUINavbar, NavbarContent, NavbarBrand, NavbarItem,} from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import { link as linkStyles } from "@heroui/theme";
-import NextLink from "next/link";
 import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
@@ -38,17 +37,17 @@ export default function Navbar() {
         <HeroUINavbar maxWidth="xl" position="sticky">
             <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
                 <NavbarBrand as="li" className="gap-3 max-w-fit">
-                    <NextLink className="flex justify-start items-center gap-1" href="/">
+                    <Link className="flex justify-start items-center gap-1" href="/" color="foreground">
                         <Logo />
                         <p className="font-bold text-inherit">EnvXSync</p>
-                    </NextLink>
+                    </Link>
                 </NavbarBrand>
                 {
                     !showLess && (
                         <ul className="hidden lg:flex gap-6 justify-start ml-6">
                             {siteConfig.navItems.map((item) => (
                                 <NavbarItem key={item.href}>
-                                    <NextLink
+                                    <Link
                                         className={clsx(
                                             linkStyles({ color: "foreground" }),
                                             "data-[active=true]:text-primary data-[active=true]:font-medium",
@@ -60,7 +59,7 @@ export default function Navbar() {
                                             // @ts-ignore
                                             t(item.label)
                                         }
-                                    </NextLink>
+                                    </Link>
                                 </NavbarItem>
                             ))}
                         </ul>

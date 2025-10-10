@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 import {Project} from "../../../../../lib/types/project";
-import Loading from "@/components/loading";
+import LoadingIcon from "@/components/LoadingIcon";
 import {getEnvVarsByIds, getProjectAgents, getProjectById} from "@/utils/project";
 import {useParams} from "next/navigation";
 import {Alert} from "@heroui/alert";
@@ -170,7 +170,7 @@ export default function ProjectDetailPage() {
                                     }
                                 />
                             ) : (
-                                <Loading className="w-10 h-10 mx-auto"/>
+                                <LoadingIcon className="w-10 h-10 mx-auto"/>
                             )
                         }
                     </div>

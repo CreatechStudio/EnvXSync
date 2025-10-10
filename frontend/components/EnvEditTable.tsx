@@ -64,7 +64,7 @@ export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
                             {
                                 envVar.isSecret ? (
                                     showSecret[index] ? (
-                                        secretValues[index] || t('Loading...')
+                                        secretValues[index] || t('LoadingIcon...')
                                     ) : (
                                         <div className="rounded-full w-40 blur-sm select-none">
                                             {envVar.value}

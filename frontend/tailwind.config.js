@@ -13,6 +13,8 @@ const config = {
                 sans: ["var(--font-sans)"],
                 mono: ["var(--font-mono)"],
             },
+            keyframes: {},
+            animation: {}
         },
     },
     darkMode: "class",
