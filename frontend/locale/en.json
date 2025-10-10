@@ -1,7 +1,8 @@
 {
   ":": ": ",
   "username": "Username",
-  "password": "Password",
+  "Password": "Password",
+  "Confirm Password": "Confirm Password",
   "login": "Login",
   "logout": "Logout",
   "next": "Next",
@@ -32,5 +33,6 @@
   "Upgrade to Pro": "Upgrade to Pro",
   "Loading...": "Loading...",
   "Pending": "Pending",
-  "OS": "OS"
+  "OS": "OS",
+  "Register New User": "Register New User"
 }

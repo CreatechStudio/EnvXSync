@@ -12,11 +12,27 @@ import {I18nNames} from "@/locale/I18nObj";
 import {useChangeLocale, useCurrentLocale, useI18n} from "@/locale/client";
 import {supportedLanguages} from "@/middleware";
 import {Button} from "@heroui/button";
+import {useEffect, useState} from "react";
+
+const SHOW_LESS_URLS = [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/admin/new"
+];
 
 export default function Navbar() {
     const currentLocale = useCurrentLocale();
     const setLocale = useChangeLocale();
     const t = useI18n();
+
+    const [showLess, setShowLess] = useState(true);
+
+    useEffect(() => {
+        if (window) {
+            setShowLess(SHOW_LESS_URLS.includes(window.location.href));
+        }
+    }, []);
 
     return (
         <HeroUINavbar maxWidth="xl" position="sticky">
@@ -27,25 +43,29 @@ export default function Navbar() {
                         <p className="font-bold text-inherit">EnvXSync</p>
                     </NextLink>
                 </NavbarBrand>
-                <ul className="hidden lg:flex gap-4 justify-start ml-2">
-                    {siteConfig.navItems.map((item) => (
-                        <NavbarItem key={item.href}>
-                            <NextLink
-                                className={clsx(
-                                    linkStyles({ color: "foreground" }),
-                                    "data-[active=true]:text-primary data-[active=true]:font-medium",
-                                )}
-                                color="foreground"
-                                href={item.href}
-                            >
-                                {
-                                    // @ts-ignore
-                                    t(item.label)
-                                }
-                            </NextLink>
-                        </NavbarItem>
-                    ))}
-                </ul>
+                {
+                    !showLess && (
+                        <ul className="hidden lg:flex gap-6 justify-start ml-6">
+                            {siteConfig.navItems.map((item) => (
+                                <NavbarItem key={item.href}>
+                                    <NextLink
+                                        className={clsx(
+                                            linkStyles({ color: "foreground" }),
+                                            "data-[active=true]:text-primary data-[active=true]:font-medium",
+                                        )}
+                                        color="foreground"
+                                        href={item.href}
+                                    >
+                                        {
+                                            // @ts-ignore
+                                            t(item.label)
+                                        }
+                                    </NextLink>
+                                </NavbarItem>
+                            ))}
+                        </ul>
+                    )
+                }
             </NavbarContent>
 
             <NavbarContent
