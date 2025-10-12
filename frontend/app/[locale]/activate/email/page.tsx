@@ -55,7 +55,6 @@ export default function ActivatePage() {
                 }
                 setResendCodeLoading(false);
             });
-
         }
     }
 
@@ -125,7 +124,7 @@ export default function ActivatePage() {
                             </Button>
                         )
                     }
-                    <Button color="primary" onPress={handleSubmit} isDisabled={!nextEnabled}>
+                    <Button color="primary" onPress={handleSubmit} isDisabled={!nextEnabled} isLoading={submitLoading}>
                         {t('Activate & Login')}
                     </Button>
                 </div>
