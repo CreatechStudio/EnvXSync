@@ -1,4 +1,3 @@
-// @ts-ignore
 import base64 from "base-64";
 import {db} from "../db";
 import {userTable} from "../db/user";
@@ -8,7 +7,11 @@ import {groupTable} from "../db/group";
 
 export class UserRuntime {
     async _isFirstUser() {
-        const adminUser = await db.select().from(userTable).where(sql`${userTable.role} = 'admin'`).limit(1);
+        const adminUser = await db
+            .select()
+            .from(userTable)
+            .where(sql`${userTable.role} = 'admin'`)
+            .limit(1);
         return adminUser.length === 0;
     }
 

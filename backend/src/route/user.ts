@@ -1,4 +1,3 @@
-// @ts-ignore
 import base64 from "base-64";
 import {Elysia, t} from "elysia";
 import {UserRuntime} from "../runtime/user";
