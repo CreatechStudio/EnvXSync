@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import {SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER} from "../index";
 
 export class Mailer {
-    async sendMail(to: string, subject: string, text: string, html?: string) {
+    async sendMail(to: string, subject: string, html: string) {
         const transporter = nodemailer.createTransport({
             host: SMTP_HOST,
             port: SMTP_PORT,
@@ -12,13 +12,12 @@ export class Mailer {
                 pass: SMTP_PASSWORD,
             },
         });
-        const result = await transporter.sendMail({
+        const mailOptions: any = {
             from: SMTP_FROM || SMTP_USER,
             to,
             subject,
-            text,
-            html,
-        });
-        return result;
+        };
+        mailOptions.html = html;
+        return await transporter.sendMail(mailOptions);
     }
 }
