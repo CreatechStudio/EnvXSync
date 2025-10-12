@@ -1,7 +1,10 @@
 import {Avatar} from "@heroui/avatar";
-import {LuUpload, LuUser} from "react-icons/lu";
+import {LuCopy, LuUpload, LuUser} from "react-icons/lu";
 import {Button} from "@heroui/button";
 import React, {useState} from "react";
+import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure} from "@heroui/modal";
+import {Input} from "@heroui/input";
+import AvatarEditor from "react-avatar-editor";
 
 function getSize(size: "sm" | "md" | "lg") {
     switch (size) {
@@ -46,14 +49,18 @@ export default function AvatarDisplay({
     src,
     name,
     size = "md",
-    upload = false
+    upload = false,
+    onUploadSuccess
 } : {
     src?: string,
     name?: string,
     size?: "sm" | "md" | "lg",
-    upload?: boolean
+    upload?: boolean,
+    onUploadSuccess?: (avatarURL: string) => void
 }) {
     const [hover, setHover] = useState(false);
+    const {isOpen, onOpen, onClose} = useDisclosure();
+    const [uploadURL, setUploadURL] = useState("");
 
     return (
         <Button
@@ -65,6 +72,7 @@ export default function AvatarDisplay({
             onPointerEnter={() => setHover(true)}
             onPointerLeave={() => setHover(false)}
             isDisabled={!upload}
+            onPress={() => onOpen()}
         >
             <div className="relative w-full h-full">
                 <div
@@ -88,6 +96,47 @@ export default function AvatarDisplay({
                     />
                 </div>
             </div>
+
+            <Modal backdrop="blur" isOpen={isOpen} onClose={onClose}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Upload Avatar</ModalHeader>
+                    <ModalBody>
+                        <div className="flex flex-col gap-6 items-center justify-center">
+                            <AvatarEditor
+                                image={uploadURL || ""}
+                            />
+
+                            <Input
+                                value={uploadURL}
+                                placeholder="Avatar URL"
+                                type="text"
+                                onValueChange={setUploadURL}
+                                size={size}
+                                classNames={{
+                                    inputWrapper: "h-auto",
+                                    innerWrapper: "m-1"
+                                }}
+                                endContent={
+                                    <Button
+                                        size={size}
+                                        isIconOnly
+                                        variant="light"
+                                    >
+                                        <LuCopy size={getSize(size)}/>
+                                    </Button>
+                                }
+                            />
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <div className="w-full flex flex-row-reverse">
+                            <Button color="primary">
+                                Upload
+                            </Button>
+                        </div>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </Button>
     );
 }
