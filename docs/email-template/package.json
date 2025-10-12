@@ -1,6 +1,7 @@
 {
-  "name": "react-email-starter",
-  "version": "1.1.0",
+  "name": "envxsync-email-template",
+  "version": "0.0.1",
+  "packageManager": "pnpm",
   "private": true,
   "scripts": {
     "build": "email build",

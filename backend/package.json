@@ -1,6 +1,8 @@
 {
-  "name": "backend",
-  "version": "1.0.50",
+  "name": "envxsync-backend",
+  "packageManager": "bun",
+  "private": true,
+  "version": "0.0.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts"

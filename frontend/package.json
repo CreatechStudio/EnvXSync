@@ -1,6 +1,7 @@
 {
-  "name": "next-app-template",
+  "name": "envxsync-frontend",
   "version": "0.0.1",
+  "packageManager": "pnpm",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
