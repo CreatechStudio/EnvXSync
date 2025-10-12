@@ -5,9 +5,16 @@ import {Input} from "@heroui/input";
 import {Form} from "@heroui/form";
 import {Button} from "@heroui/button";
 import {useI18n} from "@/locale/client";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AvatarDisplay from "@/components/AvatarDisplay";
 import {useTransitionRouter} from "next-transition-router";
+import {Md5} from "ts-md5";
+import {sha256} from "js-sha256";
+import {ApiResponse} from "../../../../lib/types/api";
+import {User} from "../../../../lib/types/user";
+import {Token} from "../../../../lib/types/token";
+import {addToast} from "@heroui/toast";
+import {post} from "@/utils/network";
 
 export default function RegisterPage() {
     const router = useTransitionRouter();
@@ -18,9 +25,73 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [nextEnabled, setNextEnabled] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     function handleSubmit() {
-        router.push("/activate/email");
+        if (nextEnabled) {
+            setLoading(true);
+
+            post('/login/register', {
+                name: username,
+                email: email,
+                passwordHash: sha256(password)
+            }).then((data: ApiResponse<User>) => {
+                if (data.success) {
+                    post('/login/login', {
+                        email: email,
+                        passwordHash: sha256(password)
+                    }).then((data: ApiResponse<User>) => {
+                        if (data.success && !data.data?.isVerified) {
+                            post('/token/generate', {
+                                type: "email_verification"
+                            }).then((data: ApiResponse<Token>) => {
+                                if (data.success) {
+                                    router.push("/activate/email");
+                                } else {
+                                    addToast({
+                                        title: data.error,
+                                        color: "danger"
+                                    });
+                                    setLoading(false);
+                                }
+                            });
+                        } else {
+                            addToast({
+                                title: data.error,
+                                color: "danger"
+                            });
+                            setLoading(false);
+                        }
+                    });
+                } else {
+                    addToast({
+                        title: data.error,
+                        color: "danger"
+                    });
+                    setLoading(false);
+                }
+            });
+        }
+    }
+
+    useEffect(() => {
+        if (username && email && password && confirmPassword && password === confirmPassword && email.includes('@')) {
+            setNextEnabled(true);
+        } else {
+            setNextEnabled(false);
+        }
+    }, [username, email, password, confirmPassword]);
+
+    function handleEmailBlur() {
+        if (avatarUrl) {
+            return;
+        }
+
+        if (email && email.includes('@')) {
+            const emailMd5 = Md5.hashStr(email.trim().toLowerCase());
+            setAvatarUrl(`https://www.gravatar.com/avatar/${emailMd5}?d=retro`);
+        }
     }
 
     return (
@@ -30,7 +101,6 @@ export default function RegisterPage() {
                     <h3 className="font-bold text-large">{t('Register New User')}</h3>
                     <AvatarDisplay
                         src={avatarUrl}
-                        name={username}
                         upload
                     />
                 </div>
@@ -51,6 +121,7 @@ export default function RegisterPage() {
                                 type="email"
                                 value={email}
                                 onValueChange={setEmail}
+                                onBlur={handleEmailBlur}
                             />
                         </div>
                         <Input
@@ -69,7 +140,7 @@ export default function RegisterPage() {
                 </CardBody>
                 <CardFooter>
                     <div className="w-full flex flex-row-reverse">
-                        <Button type="submit" color="primary">
+                        <Button type="submit" color="primary" isDisabled={!nextEnabled} isLoading={loading}>
                             {t('Next')}
                         </Button>
                     </div>

@@ -3,15 +3,23 @@
 import {Card, CardBody, CardFooter, CardHeader} from "@heroui/card";
 import {useI18n} from "@/locale/client";
 import {InputOtp} from "@heroui/input-otp";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Button} from "@heroui/button";
+import {ApiResponse} from "../../../../../lib/types/api";
+import {useTransitionRouter} from "next-transition-router";
+import {addToast} from "@heroui/toast";
+import {post} from "@/utils/network";
 
 export default function ActivatePage() {
     const t = useI18n();
+    const router = useTransitionRouter();
 
     const [otp, setOtp] = useState('');
     const [remainSeconds, setRemainSeconds] = useState(0);
     const remainSecondBtRef = useRef<HTMLButtonElement>(null);
+    const [resendCodeLoading, setResendCodeLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
+    const [nextEnabled, setNextEnabled] = useState(false);
 
     function resendCodeLoop() {
         if (remainSecondBtRef.current) {
@@ -30,12 +38,53 @@ export default function ActivatePage() {
 
     function handleResendCode() {
         if (remainSeconds <= 0) {
-            // Add send code logic here
-            setRemainSeconds(120);
-            setTimeout(() => {
-                resendCodeLoop();
-            }, 1000);
+            setResendCodeLoading(true);
+            post("/token/generate", {
+                type: "email_verification"
+            }).then((data: ApiResponse) => {
+                if (data.success) {
+                    setRemainSeconds(60);
+                    setTimeout(() => {
+                        resendCodeLoop();
+                    }, 1000);
+                } else {
+                    addToast({
+                        title: data.error,
+                        color: "danger"
+                    });
+                }
+                setResendCodeLoading(false);
+            });
+
         }
+    }
+
+    useEffect(() => {
+        if (otp && otp.length === 6) {
+            setNextEnabled(true);
+        }
+    }, [otp]);
+
+    function handleSubmit() {
+        if (!nextEnabled) {
+            return;
+        }
+
+        setSubmitLoading(true);
+        post('/token/verify', {
+            token: otp,
+            type: "email_verification"
+        }).then((data: ApiResponse) => {
+            if (data.success) {
+                router.push("/");
+            } else {
+                addToast({
+                    title: data.error,
+                    color: "danger"
+                });
+                setSubmitLoading(false);
+            }
+        });
     }
 
     return (
@@ -50,7 +99,8 @@ export default function ActivatePage() {
                     <InputOtp
                         length={6}
                         value={otp}
-                        onValueChange={setOtp}
+                        allowedKeys="^[0-9a-zA-Z]*$"
+                        onValueChange={(value) => setOtp(value.toUpperCase())}
                         variant="flat"
                         description={t('Please enter the 6-digit code sent to your email.')}
                         classNames={{
@@ -66,7 +116,7 @@ export default function ActivatePage() {
                 <div className="flex flex-row items-center justify-between w-full">
                     {
                         remainSeconds === 0 ? (
-                            <Button variant="flat" onPress={handleResendCode}>
+                            <Button variant="flat" onPress={handleResendCode} isLoading={resendCodeLoading}>
                                 {t('Resend Code')}
                             </Button>
                         ) : (
@@ -75,7 +125,7 @@ export default function ActivatePage() {
                             </Button>
                         )
                     }
-                    <Button color="primary">
+                    <Button color="primary" onPress={handleSubmit} isDisabled={!nextEnabled}>
                         {t('Activate & Login')}
                     </Button>
                 </div>
