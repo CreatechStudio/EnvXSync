@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import {UserRoute} from "./route/user";
 import {LoginRoute} from "./route/login";
 import {TokenRoute} from "./route/token";
+import {ip} from "elysia-ip";
 
 dotenv.config()
 export const BASE_URL = process.env.EXS_BASE_URL || "http://localhost:6000"
@@ -18,6 +19,7 @@ export const SMTP_USER = process.env.EXS_SMTP_USERNAME || ""
 export const SMTP_PASSWORD = process.env.EXS_SMTP_PASSWORD || ""
 
 const app = new Elysia()
+    .use(ip())
     .use(swagger())
     .use(cors({
         origin: process.env.WEB_URL || 'http://localhost:3000',

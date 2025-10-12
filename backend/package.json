@@ -17,6 +17,7 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "elysia": "latest",
+    "elysia-ip": "^1.0.10",
     "elysia-rate-limit": "^4.4.0",
     "js-sha256": "^0.11.1",
     "nodemailer": "^7.0.9",

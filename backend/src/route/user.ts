@@ -1,5 +1,5 @@
 import base64 from "base-64";
-import {Elysia, t} from "elysia";
+import {Elysia, status, t} from "elysia";
 import {UserRuntime} from "../runtime/user";
 import {ApiResponse} from "../../../lib/types/api";
 import {User} from "../../../lib/types/user";
@@ -17,7 +17,7 @@ export const UserRoute = new Elysia()
                             if (await permissionRuntime.verifyJWT(auth.toString() || '')) {
                                 return;
                             } else {
-                                throw "Invalid token";
+                                return status(401, "Unauthorized");
                             };
                         } catch (e) {
                             return {
@@ -26,10 +26,7 @@ export const UserRoute = new Elysia()
                             }
                         }
                     } else {
-                        return {
-                            success: false,
-                            error: 'Invalid token',
-                        };
+                        return status(401, "Unauthorized");
                     }}
             }, (app) => app
                 .get('fetch', async ({user, cookie: {auth}}) => {
