@@ -3,10 +3,33 @@ import { Elysia, status, t } from "elysia";
 import { ApiResponse } from "../../../lib/types/api";
 import { Token } from "../../../lib/types/token";
 import { TokenRuntime } from "../runtime/token";
+import {rateLimit} from "elysia-rate-limit";
 
 export const TokenRoute = new Elysia()
     .decorate('token', new TokenRuntime())
     .group('token', (app) => app
+        .use(rateLimit({
+            duration: 60_000,
+            max: 1,
+            errorResponse: new Response(
+                JSON.stringify({
+                    success: false,
+                    error: `Too many requests`
+                }),
+                {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            ),
+            scoping: "scoped",
+            generator: (request, server) => {
+                const ip = server?.requestIP(request)?.address
+                    || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+                    || request.headers.get("cf-connecting-ip")
+                    || "127.0.0.1";
+                return ip;
+            }
+        }))
         .post('generate', async ({ token, cookie: { auth }, body }) => {
             try {
                 let newToken;
@@ -44,6 +67,30 @@ export const TokenRoute = new Elysia()
                 email: t.Optional(t.String())
             })
         })
+    )
+    .group('token', (app) => app
+        .use(rateLimit({
+            duration: 60_000,
+            max: 5,
+            errorResponse: new Response(
+                JSON.stringify({
+                    success: false,
+                    error: `Try 1 minute later`
+                }),
+                {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            ),
+            scoping: "scoped",
+            generator: (request, server) => {
+                const ip = server?.requestIP(request)?.address
+                    || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+                    || request.headers.get("cf-connecting-ip")
+                    || "127.0.0.1";
+                return ip;
+            }
+        }))
         .post('verify', async ({ token, cookie: { auth }, body }) => {
             try {
                 let userId = "";
@@ -76,4 +123,4 @@ export const TokenRoute = new Elysia()
                 email: t.String()
             })
         })
-    );
+    )

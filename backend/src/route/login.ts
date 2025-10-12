@@ -6,6 +6,7 @@ import {User} from "../../../lib/types/user";
 import dotenv from "dotenv";
 import {randomUUID} from "crypto";
 import dayjs from "dayjs";
+import {rateLimit} from "elysia-rate-limit";
 
 dotenv.config()
 export const JWT_SECRET = process.env.EXS_JWT_SECRET || randomUUID()
@@ -45,6 +46,30 @@ export const LoginRoute = new Elysia()
                 cookie: t.String()
             })
         })
+    )
+    .group('login', (app) => app
+        .use(rateLimit({
+            duration: 60_000,
+            max: 5,
+            errorResponse: new Response(
+                JSON.stringify({
+                    success: false,
+                    error: `Too many requests`
+                }),
+                {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            ),
+            scoping: "scoped",
+            generator: (request, server) => {
+                const ip = server?.requestIP(request)?.address
+                    || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+                    || request.headers.get("cf-connecting-ip")
+                    || "127.0.0.1";
+                return ip;
+            }
+        }))
         .post('login', async ({ user, jwt, cookie: { auth } ,body: {email, passwordHash}}) => {
             try {
                 let authorizeAnswer = await user.doLogin(email, passwordHash);

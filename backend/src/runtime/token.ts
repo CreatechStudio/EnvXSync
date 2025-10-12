@@ -72,9 +72,7 @@ export class TokenRuntime {
 
     async verifyToken(type: string, token: string, user_id?: string, email?: string) {
         try {
-            console.log("2222", type, email)
             if (type === "password_reset" && email) {
-                console.log("11111111111111")
                 const thisUser = await db
                     .select()
                     .from(userTable)
@@ -83,7 +81,6 @@ export class TokenRuntime {
                 if (!thisUser) {
                     throw "User not found";
                 }
-                console.log(thisUser)
                 user_id = thisUser.id;
             }
             if (type === "email_verification" && !user_id) {
@@ -94,7 +91,6 @@ export class TokenRuntime {
                 .from(tokenTable)
                 .where(sql`${tokenTable.user_id} = ${user_id} and ${tokenTable.token} = ${token} and ${tokenTable.type} = ${type} and ${tokenTable.used} = false`)
                 .then(res => res[0]) as Token;
-            console.log(user_id, token, type);
             if (!existingToken) {
                 throw "Invalid or expired token";
             }

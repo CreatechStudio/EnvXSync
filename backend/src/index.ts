@@ -22,7 +22,7 @@ const app = new Elysia()
     .use(ip())
     .use(swagger())
     .use(cors({
-        origin: process.env.WEB_URL || 'http://localhost:3000',
+        origin: WEB_URL || 'http://localhost:3000',
         credentials: true,
         allowedHeaders: ['Content-Type', 'Origin', 'Cookie', 'Accept']
     }))
@@ -64,5 +64,5 @@ if (process.env.ENV === "development") {
 }
 
 console.log(
-    `🦊 EnvXSync Backend is running at http://${app.server?.hostname}:${app.server?.port} \n📚 Swagger UI: http://${app.server?.hostname}:${app.server?.port}/swagger`
+    `🦊 EnvXSync Backend is running at ${BASE_URL} \n📚 Swagger UI: ${BASE_URL}/swagger`
 );
