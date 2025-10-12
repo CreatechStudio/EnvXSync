@@ -6,7 +6,7 @@ import {logger} from "@bogeychan/elysia-logger";
 import dotenv from 'dotenv';
 import {UserRoute} from "./route/user";
 import {LoginRoute} from "./route/login";
-import {randomUUID} from "crypto";
+import {TokenRoute} from "./route/token";
 
 dotenv.config()
 export const BASE_URL = process.env.EXS_BASE_URL || "http://localhost:6000"
@@ -28,6 +28,11 @@ const app = new Elysia()
         stream: process.stdout,
         level: "error",
     }))
+
+    .use(UserRoute)
+    .use(LoginRoute)
+    .use(TokenRoute)
+
     .get('/ping', () => {return 'Pong!'})
     .get('/env/:prefix', async ({params: {prefix}}) => {
         let env: {[Keys: string]: string} = {};
@@ -48,17 +53,13 @@ const app = new Elysia()
             prefix: t.String()
         })
     })
-
+    .listen(process.env.PORT ?? 6001)
 
 
 if (process.env.ENV === "development") {
     app.get("/", () => "Welcome to EnvXSync Backend!")
     app.use(TestRoute);
 }
-
-app.use(UserRoute);
-app.use(LoginRoute);
-app.listen(process.env.PORT ?? 6001);
 
 console.log(
     `🦊 EnvXSync Backend is running at http://${app.server?.hostname}:${app.server?.port} \n📚 Swagger UI: http://${app.server?.hostname}:${app.server?.port}/swagger`

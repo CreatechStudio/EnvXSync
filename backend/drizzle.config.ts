@@ -19,6 +19,7 @@ export default defineConfig({
         './src/db/group.ts',
         './src/db/permission.ts',
         './src/db/project.ts',
+        './src/db/token.ts',
         './src/db/user.ts',
     ],
     dialect: 'postgresql',
