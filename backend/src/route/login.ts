@@ -6,6 +6,7 @@ import {User} from "../../../lib/types/user";
 import dotenv from "dotenv";
 import {randomUUID} from "crypto";
 import dayjs from "dayjs";
+import {rateLimit} from "elysia-rate-limit";
 
 dotenv.config()
 export const JWT_SECRET = process.env.EXS_JWT_SECRET || randomUUID()
@@ -19,6 +20,9 @@ export const LoginRoute = new Elysia()
         })
     )
     .group('login', (app) => app
+        .get('logout', ({ cookie: { auth } }) => {
+            auth.remove();
+        })
         .post('verify', async ({ jwt, body }) => {
             try {
                 const token = body.cookie.toString() || '';
@@ -45,6 +49,19 @@ export const LoginRoute = new Elysia()
                 cookie: t.String()
             })
         })
+    )
+    .group('login', (app) => app
+        .use(
+            rateLimit({
+                duration: 60_000,
+                max: 5,
+                scoping: 'scoped',
+                errorResponse: new Response(JSON.stringify({success: false, error: 'Too many requests, please try again later.'}), {
+                    status: 200,
+                    headers: {'Content-Type': 'application/json'}
+                })
+            })
+        )
         .post('login', async ({ user, jwt, cookie: { auth } ,body: {email, passwordHash}}) => {
             try {
                 let authorizeAnswer = await user.doLogin(email, passwordHash);
@@ -95,7 +112,20 @@ export const LoginRoute = new Elysia()
                 passwordHash: t.String()
             })
         })
-        .get('logout', ({ cookie: { auth } }) => {
-            auth.remove();
+    )
+    .group('login', (app) => app
+        .use(
+            rateLimit({
+                duration: 60_000,
+                max: 1,
+                scoping: 'scoped',
+                errorResponse: new Response(JSON.stringify({success: false, error: 'Too many requests, please try again later.'}), {
+                    status: 200,
+                    headers: {'Content-Type': 'application/json'}
+                })
+            })
+        )
+        .post('reset-password', async ({ jwt, body }) => {
+            // TODO: Implement password reset via email
         })
     )

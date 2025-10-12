@@ -1,4 +1,4 @@
-import {pgTable, text, timestamp} from "drizzle-orm/pg-core";
+import {boolean, pgTable, text, timestamp} from "drizzle-orm/pg-core";
 import {randomUUID} from "crypto";
 import {sql} from "drizzle-orm";
 
@@ -9,6 +9,7 @@ export const userTable = pgTable(
             .$defaultFn(() => randomUUID()),
         name: text('name').notNull(),
         email: text('email').notNull().unique(),
+        isVerified: boolean('is_verified').notNull().default('false'),
         password: text('password').default(sql`NULL`),
         createdAt: timestamp('created_at').notNull().defaultNow(),
         updatedAt: timestamp('updated_at').notNull().defaultNow(),
