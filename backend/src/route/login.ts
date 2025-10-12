@@ -6,7 +6,6 @@ import {User} from "../../../lib/types/user";
 import dotenv from "dotenv";
 import {randomUUID} from "crypto";
 import dayjs from "dayjs";
-import PermissionRuntime from "../runtime/permission";
 
 dotenv.config()
 export const JWT_SECRET = process.env.EXS_JWT_SECRET || randomUUID()
@@ -102,55 +101,28 @@ export const LoginRoute = new Elysia()
                 passwordHash: t.String()
             })
         })
-        .guard(
-            {
-                async beforeHandle({ cookie: { auth } }) {
-                    if (auth) {
-                        try {
-                            let permissionRuntime = new PermissionRuntime();
-                            if (await permissionRuntime.verifyJWT(auth.toString() || '')) {
-                                return;
-                            } else {
-                                return status(401, "Unauthorized");
-                            }
-                        } catch (e) {
-                            return {
-                                success: false,
-                                error: e,
-                            };
-                        }
-                    } else {
-                        return status(401, "Unauthorized")
-                    }
+        .post('reset-password', async ({ user, body, cookie: { auth } }) => {
+            try {
+                const resetResult = await user.resetPassword(body.tokenId, body.email, body.newPasswordHash);
+                if (resetResult) {
+                    return {
+                        success: true,
+                        data: resetResult,
+                    } as ApiResponse<User>;
+                } else {
+                    throw "Reset password failed";
                 }
-            },
-            (app) => app
-                .post('reset-password', async ({ user, body, cookie: { auth } }) => {
-                    try {
-                        const me = await user.fetch(auth.toString() || '');
-                        if (me) {
-                            const resetResult = await user.resetPassword(body.tokenId, me.id, body.newPasswordHash);
-                            if (resetResult) {
-                                return {
-                                    success: true,
-                                    data: resetResult,
-                                } as ApiResponse<User>;
-                            } else {
-                                throw "Reset password failed";
-                            }
-                        }
-                        throw "User not found";
-                    } catch (e) {
-                        return {
-                            success: false,
-                            error: e,
-                        } as ApiResponse;
-                    }
-                }, {
-                    body: t.Object({
-                        tokenId: t.String(),
-                        newPasswordHash: t.String()
-                    })
-                })
-        )
+            } catch (e) {
+                return {
+                    success: false,
+                    error: e,
+                } as ApiResponse;
+            }
+        }, {
+            body: t.Object({
+                tokenId: t.String(),
+                email: t.String(),
+                newPasswordHash: t.String()
+            })
+        })
     )

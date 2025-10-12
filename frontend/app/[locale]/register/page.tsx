@@ -44,7 +44,8 @@ export default function RegisterPage() {
                     }).then((data: ApiResponse<User>) => {
                         if (data.success && !data.data?.isVerified) {
                             post('/token/generate', {
-                                type: "email_verification"
+                                type: "email_verification",
+                                email: ""
                             }).then((data: ApiResponse<Token>) => {
                                 if (data.success) {
                                     router.push("/activate/email");

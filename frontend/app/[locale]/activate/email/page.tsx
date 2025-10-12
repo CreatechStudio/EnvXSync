@@ -40,7 +40,8 @@ export default function ActivatePage() {
         if (remainSeconds <= 0) {
             setResendCodeLoading(true);
             post("/token/generate", {
-                type: "email_verification"
+                type: "email_verification",
+                email: ""
             }).then((data: ApiResponse) => {
                 if (data.success) {
                     setRemainSeconds(60);
@@ -72,7 +73,8 @@ export default function ActivatePage() {
         setSubmitLoading(true);
         post('/token/verify', {
             token: otp,
-            type: "email_verification"
+            type: "email_verification",
+            email: ""
         }).then((data: ApiResponse) => {
             if (data.success) {
                 router.push("/");

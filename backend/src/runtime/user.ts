@@ -6,6 +6,7 @@ import {User, UserGroup} from "../../../lib/types/user";
 import {groupTable} from "../db/group";
 import {tokenTable} from "../db/token";
 import dayjs from "dayjs";
+import {Token} from "../../../lib/types/token";
 
 export class UserRuntime {
     async _isFirstUser() {
@@ -113,14 +114,23 @@ export class UserRuntime {
         }
     }
 
-    async resetPassword(tokenId: string, userId: string, passwordHash: string) {
+    async resetPassword(tokenId: string, email: string, passwordHash: string) {
         try {
+            let thisUser = await db
+                .select()
+                .from(userTable)
+                .where(sql`${userTable.email} = ${email}`)
+                .limit(1)
+                .then(res => res[0]) as User;
+            if (!thisUser) {
+                throw "User not found";
+            }
             const usedToken = await db
                 .select()
                 .from(tokenTable)
-                .where(sql`${tokenTable.id} = ${tokenId} and ${tokenTable.user_id} = ${userId} and ${tokenTable.type} = 'password_reset'`)
+                .where(sql`${tokenTable.id} = ${tokenId} and ${tokenTable.user_id} = ${thisUser.id} and ${tokenTable.type} = 'password_reset'`)
                 .limit(1)
-                .then(res => res[0]);
+                .then(res => res[0]) as Token;
             console.log(usedToken);
             if (!usedToken) {
                 throw "Invalid token";
@@ -135,7 +145,7 @@ export class UserRuntime {
                     .set({
                         password: passwordHash
                     })
-                    .where(sql`${userTable.id} = ${userId}`)
+                    .where(sql`${userTable.id} = ${thisUser.id}`)
                     .returning()
                     .then(res => res[0]) as User;
                 user.password = "";
