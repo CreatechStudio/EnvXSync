@@ -14,6 +14,7 @@ export const projectTable = pgTable(
         createdAt: timestamp('created_at').notNull().defaultNow(),
         updatedAt: timestamp('updated_at').notNull().defaultNow(),
         creatorID: text('creator_id').notNull(),
+        updatedBy: text('updated_by').notNull(),
         envVarIDs: text('env_var_ids').array().notNull().default(sql`'{}'::text[]`),
     }
 );

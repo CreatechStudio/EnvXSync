@@ -7,6 +7,7 @@ export interface Permission {
     groupIDs: string[];
     createdAt: Date;
     updatedAt: Date;
+    updatedBy: string;
     resourceType: 'project' | 'agent' | 'user' | 'group';
     resourceIDs: string[];
     level: 'deny' | 'read' | 'write' | 'admin';

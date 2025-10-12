@@ -7,5 +7,6 @@ export interface Project {
     createdAt: Date;
     updatedAt: Date;
     creatorID: string;
+    updatedBy: string;
     envVarIDs: string[];
 }

@@ -14,6 +14,7 @@ export const permissionTable = pgTable(
         groupIDs: text('group_ids').array().notNull().default(sql`'{}'::text[]`),
         createdAt: timestamp('created_at').notNull().defaultNow(),
         updatedAt: timestamp('updated_at').notNull().defaultNow(),
+        updatedBy: text('updated_by').notNull(),
         resourceType: text('resource_type').notNull().default('project'),
         resourceIDs: text('resource_ids').array().notNull().default(sql`'{}'::text[]`),
         level: text('level').notNull().default('deny')
