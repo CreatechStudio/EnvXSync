@@ -11,59 +11,41 @@ import {I18nNames} from "@/locale/I18nObj";
 import {useChangeLocale, useCurrentLocale, useI18n} from "@/locale/client";
 import {supportedLanguages} from "@/middleware";
 import {Button} from "@heroui/button";
-import {useEffect, useState} from "react";
-
-const SHOW_LESS_URLS = [
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/admin/new"
-];
 
 export default function Navbar() {
     const currentLocale = useCurrentLocale();
     const setLocale = useChangeLocale();
     const t = useI18n();
 
-    const [showLess, setShowLess] = useState(true);
-
-    useEffect(() => {
-        if (window) {
-            setShowLess(SHOW_LESS_URLS.includes(window.location.href));
-        }
-    }, []);
-
     return (
         <HeroUINavbar maxWidth="xl" position="sticky">
             <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
                 <NavbarBrand as="li" className="gap-3 max-w-fit">
-                    <Link className="flex justify-start items-center gap-1" href="/" color="foreground">
-                        <Logo />
-                        <p className="font-bold text-inherit">EnvXSync</p>
-                    </Link>
+                    <div className="flex justify-start items-center gap-1" color="foreground">
+                        <Logo/>
+                        <p className="font-bold text-inherit select-none">EnvXSync</p>
+                    </div>
                 </NavbarBrand>
                 {
-                    !showLess && (
-                        <ul className="hidden lg:flex gap-6 justify-start ml-6">
-                            {siteConfig.navItems.map((item) => (
-                                <NavbarItem key={item.href}>
-                                    <Link
-                                        className={clsx(
-                                            linkStyles({ color: "foreground" }),
-                                            "data-[active=true]:text-primary data-[active=true]:font-medium",
-                                        )}
-                                        color="foreground"
-                                        href={item.href}
-                                    >
-                                        {
-                                            // @ts-ignore
-                                            t(item.label)
-                                        }
-                                    </Link>
-                                </NavbarItem>
-                            ))}
-                        </ul>
-                    )
+                    <ul className="hidden md:flex gap-6 justify-start ml-6">
+                        {siteConfig.navItems.map((item) => (
+                            <NavbarItem key={item.href}>
+                                <Link
+                                    className={clsx(
+                                        linkStyles({ color: "foreground" }),
+                                        "data-[active=true]:text-primary data-[active=true]:font-medium",
+                                    )}
+                                    color="foreground"
+                                    href={`/${currentLocale}${item.href}`}
+                                >
+                                    {
+                                        // @ts-ignore
+                                        t(item.label)
+                                    }
+                                </Link>
+                            </NavbarItem>
+                        ))}
+                    </ul>
                 }
             </NavbarContent>
 
