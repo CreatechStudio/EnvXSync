@@ -4,12 +4,11 @@ import { ApiResponse } from "../../../lib/types/api";
 import { Token } from "../../../lib/types/token";
 import { TokenRuntime } from "../runtime/token";
 import PermissionRuntime from "../runtime/permission";
-import { rateLimit } from "elysia-rate-limit";
 
 export const TokenRoute = new Elysia()
     .decorate('token', new TokenRuntime())
-    .group('token', (app) =>
-        app.guard(
+    .group('token', (app) => app
+        .guard(
             {
                 async beforeHandle({ cookie: { auth } }) {
                     if (auth) {
@@ -32,17 +31,6 @@ export const TokenRoute = new Elysia()
                 }
             },
             (app) => app
-                .use(
-                    rateLimit({
-                        duration: 60_000,
-                        max: 5,
-                        scoping: 'scoped',
-                        errorResponse: new Response(JSON.stringify({ success: false, error: 'Too many requests, please try again later.' }), {
-                            status: 200,
-                            headers: { 'Content-Type': 'application/json' }
-                        })
-                    })
-                )
                 .post('generate', async ({ token, cookie: { auth }, body }) => {
                     try {
                         let userId = JSON.parse(base64.decode(auth.toString().split(".")[1])).id;
@@ -67,8 +55,8 @@ export const TokenRoute = new Elysia()
                         let userId = JSON.parse(base64.decode(auth.toString().split(".")[1])).id;
                         let result = await token.verifyToken(userId || "", body.token, body.type);
                         return {
-                            success: result,
-                            data: "Token verified successfully",
+                            success: true,
+                            data: result,
                         } as ApiResponse<string>;
                     } catch (e) {
                         return {

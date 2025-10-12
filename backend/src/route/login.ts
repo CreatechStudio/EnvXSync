@@ -1,4 +1,4 @@
-import {Elysia, t} from "elysia";
+import {Elysia, status, t} from "elysia";
 import {ApiResponse} from "../../../lib/types/api";
 import jwt from "@elysiajs/jwt";
 import {UserRuntime} from "../runtime/user";
@@ -6,7 +6,7 @@ import {User} from "../../../lib/types/user";
 import dotenv from "dotenv";
 import {randomUUID} from "crypto";
 import dayjs from "dayjs";
-import {rateLimit} from "elysia-rate-limit";
+import PermissionRuntime from "../runtime/permission";
 
 dotenv.config()
 export const JWT_SECRET = process.env.EXS_JWT_SECRET || randomUUID()
@@ -33,10 +33,7 @@ export const LoginRoute = new Elysia()
                         data: true,
                     } as ApiResponse<Boolean>;
                 } else {
-                    return {
-                        success: false,
-                        error: 'Token expired or invalid',
-                    } as ApiResponse;
+                    throw "Token is invalid or expired";
                 }
             } catch (e) {
                 return {
@@ -49,19 +46,6 @@ export const LoginRoute = new Elysia()
                 cookie: t.String()
             })
         })
-    )
-    .group('login', (app) => app
-        .use(
-            rateLimit({
-                duration: 60_000,
-                max: 5,
-                scoping: 'scoped',
-                errorResponse: new Response(JSON.stringify({success: false, error: 'Too many requests, please try again later.'}), {
-                    status: 200,
-                    headers: {'Content-Type': 'application/json'}
-                })
-            })
-        )
         .post('login', async ({ user, jwt, cookie: { auth } ,body: {email, passwordHash}}) => {
             try {
                 let authorizeAnswer = await user.doLogin(email, passwordHash);
@@ -79,6 +63,8 @@ export const LoginRoute = new Elysia()
                         success: true,
                         data: authorizeAnswer,
                     } as ApiResponse<User>;
+                } else {
+                    throw "Login failed";
                 }
             } catch (e) {
                 return {
@@ -86,19 +72,23 @@ export const LoginRoute = new Elysia()
                     error: e,
                 } as ApiResponse;
             }
-            }, {
-                body: t.Object({
-                    email: t.String(),
-                    passwordHash: t.String()
-                })
+        }, {
+            body: t.Object({
+                email: t.String(),
+                passwordHash: t.String()
             })
+        })
         .post('register', async ({ user, body: { name, email, passwordHash } }) => {
             try {
                 const newUser = await user.newPasswordUser(name, email, passwordHash);
-                return {
-                    success: true,
-                    data: newUser,
-                } as ApiResponse<User>;
+                if (newUser) {
+                    return {
+                        success: true,
+                        data: newUser,
+                    } as ApiResponse<User>;
+                } else {
+                    throw "Register failed";
+                }
             } catch (e) {
                 return {
                     success: false,
@@ -112,20 +102,55 @@ export const LoginRoute = new Elysia()
                 passwordHash: t.String()
             })
         })
-    )
-    .group('login', (app) => app
-        .use(
-            rateLimit({
-                duration: 60_000,
-                max: 1,
-                scoping: 'scoped',
-                errorResponse: new Response(JSON.stringify({success: false, error: 'Too many requests, please try again later.'}), {
-                    status: 200,
-                    headers: {'Content-Type': 'application/json'}
+        .guard(
+            {
+                async beforeHandle({ cookie: { auth } }) {
+                    if (auth) {
+                        try {
+                            let permissionRuntime = new PermissionRuntime();
+                            if (await permissionRuntime.verifyJWT(auth.toString() || '')) {
+                                return;
+                            } else {
+                                return status(401, "Unauthorized");
+                            }
+                        } catch (e) {
+                            return {
+                                success: false,
+                                error: e,
+                            };
+                        }
+                    } else {
+                        return status(401, "Unauthorized")
+                    }
+                }
+            },
+            (app) => app
+                .post('reset-password', async ({ user, body, cookie: { auth } }) => {
+                    try {
+                        const me = await user.fetch(auth.toString() || '');
+                        if (me) {
+                            const resetResult = await user.resetPassword(body.tokenId, me.id, body.newPasswordHash);
+                            if (resetResult) {
+                                return {
+                                    success: true,
+                                    data: resetResult,
+                                } as ApiResponse<User>;
+                            } else {
+                                throw "Reset password failed";
+                            }
+                        }
+                        throw "User not found";
+                    } catch (e) {
+                        return {
+                            success: false,
+                            error: e,
+                        } as ApiResponse;
+                    }
+                }, {
+                    body: t.Object({
+                        tokenId: t.String(),
+                        newPasswordHash: t.String()
+                    })
                 })
-            })
         )
-        .post('reset-password', async ({ jwt, body }) => {
-            // TODO: Implement password reset via email
-        })
     )

@@ -4,6 +4,8 @@ import {userTable} from "../db/user";
 import {sql} from "drizzle-orm";
 import {User, UserGroup} from "../../../lib/types/user";
 import {groupTable} from "../db/group";
+import {tokenTable} from "../db/token";
+import dayjs from "dayjs";
 
 export class UserRuntime {
     async _isFirstUser() {
@@ -108,6 +110,47 @@ export class UserRuntime {
             return user;
         } catch (e) {
             throw "Failed to update avatar";
+        }
+    }
+
+    async resetPassword(tokenId: string, userId: string, passwordHash: string) {
+        try {
+            const usedToken = await db
+                .select()
+                .from(tokenTable)
+                .where(sql`${tokenTable.id} = ${tokenId} and ${tokenTable.user_id} = ${userId} and ${tokenTable.type} = 'password_reset'`)
+                .limit(1)
+                .then(res => res[0]);
+            console.log(usedToken);
+            if (!usedToken) {
+                throw "Invalid token";
+            }
+            if (usedToken.used) {
+                console.log("token used", usedToken.used);
+                if (dayjs(usedToken.expires_at).isBefore(dayjs())) {
+                    throw "Token expired or used for once";
+                }
+                let user = await db
+                    .update(userTable)
+                    .set({
+                        password: passwordHash
+                    })
+                    .where(sql`${userTable.id} = ${userId}`)
+                    .returning()
+                    .then(res => res[0]) as User;
+                user.password = "";
+                await db
+                    .update(tokenTable)
+                    .set({
+                        expires_at: dayjs(0).toDate()
+                    })
+                    .where(sql`${tokenTable.id} = ${tokenId}`)
+                return user;
+            } else {
+                throw "Invalid or not used token";
+            }
+        } catch (e) {
+            throw e;
         }
     }
 }

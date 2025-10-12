@@ -39,11 +39,20 @@ export class TokenRuntime {
                 .from(userTable)
                 .where(sql`${userTable.id} = ${user_id}`)
                 .then(res => res[0]) as User
-            const templatePath = path.join(__dirname, "email-template/token/email_verification.html");
+            let templatePath = "";
+            let emailSubject = "";
+            if (type == "email_verification") {
+                templatePath = path.join(__dirname, "email-template/token/email_verification.html");
+                emailSubject = "EnvXSync Email Verification";
+            } else if (type == "password_reset") {
+                templatePath = path.join(__dirname, "email-template/token/password_reset.html");
+                emailSubject = "EnvXSync Password Reset";
+            }
             let emailContent = fs.readFileSync(templatePath, "utf-8");
             emailContent = emailContent.replace("REPLACE_CODE", token);
-            await mailer.sendMail(thisUser.email, "EnvXSync Verification Code", emailContent);
+            await mailer.sendMail(thisUser.email, emailSubject, emailContent);
             newToken.token = "";
+            newToken.id = "";
             return newToken;
         } catch (e) {
             throw "Failed to create token";
@@ -55,7 +64,7 @@ export class TokenRuntime {
             const existingToken = await db
                 .select()
                 .from(tokenTable)
-                .where(sql`${tokenTable.user_id} = ${user_id} AND ${tokenTable.token} = ${token} AND ${tokenTable.type} = ${type} AND ${tokenTable.used} = false AND ${tokenTable.expires_at} > NOW()`)
+                .where(sql`${tokenTable.user_id} = ${user_id} and ${tokenTable.token} = ${token} and ${tokenTable.type} = ${type} and ${tokenTable.used} = false`)
                 .then(res => res[0]) as Token;
             if (!existingToken) {
                 throw "Invalid or expired token";
@@ -68,7 +77,7 @@ export class TokenRuntime {
                     isVerified: true,
                 }).where(sql`${userTable.id} = ${user_id}`);
             }
-            return true;
+            return existingToken.id;
         } catch (e) {
             throw e;
         }
