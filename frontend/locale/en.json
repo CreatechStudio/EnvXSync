@@ -38,5 +38,11 @@
   "Activate By Email": "Activate By Email",
   "Resend Code": "Resend Code",
   "Activate & Login": "Activate & Login",
-  "Please enter the 6-digit code sent to your email.": "Please enter the 6-digit code sent to your email."
+  "Please enter the 6-digit code sent to your email.": "Please enter the 6-digit code sent to your email.",
+  "Loading is taking longer than expected": "Loading is taking longer than expected.",
+  "Please": "Please",
+  "refresh": "refresh",
+  "or try again later": "or try again later",
+  ".": ".",
+  "Login": "Login"
 }

@@ -39,5 +39,11 @@
   "Activate By Email": "通过电子邮件激活",
   "Resend Code": "重新发送验证码",
   "Activate & Login": "激活并登录",
-  "Please enter the 6-digit code sent to your email.": "请输入发送到您邮箱的6位验证码"
+  "Please enter the 6-digit code sent to your email.": "请输入发送到您邮箱的6位验证码",
+  "Loading is taking longer than expected": "加载时间比预期的要长",
+  "Please": "请",
+  "refresh": "刷新",
+  "or try again later": "或稍后再试",
+  ".": " ",
+  "Login": "登录"
 }
