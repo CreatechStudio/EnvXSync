@@ -1,10 +1,14 @@
 import {Avatar} from "@heroui/avatar";
 import {LuCopy, LuUpload, LuUser} from "react-icons/lu";
 import {Button} from "@heroui/button";
-import React, {useState} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure} from "@heroui/modal";
 import {Input} from "@heroui/input";
 import AvatarEditor from "react-avatar-editor";
+import {Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger} from "@heroui/dropdown";
+import {Divider} from "@heroui/divider";
+import {useTransitionRouter} from "next-transition-router";
+import {get} from "@/utils/network";
 
 function getSize(size: "sm" | "md" | "lg") {
     switch (size) {
@@ -45,18 +49,18 @@ function MyAvatar(
     );
 }
 
-export default function AvatarDisplay({
+function AvatarContent({
     src,
     name,
     size = "md",
     upload = false,
-    onUploadSuccess
+    onUploadSuccess,
 } : {
     src?: string,
     name?: string,
     size?: "sm" | "md" | "lg",
     upload?: boolean,
-    onUploadSuccess?: (avatarURL: string) => void
+    onUploadSuccess?: (avatarURL: string) => void,
 }) {
     const [hover, setHover] = useState(false);
     const {isOpen, onOpen, onClose} = useDisclosure();
@@ -72,7 +76,7 @@ export default function AvatarDisplay({
             onPointerEnter={() => setHover(true)}
             onPointerLeave={() => setHover(false)}
             isDisabled={!upload}
-            onPress={() => onOpen()}
+            onPress={() => {if (upload) onOpen()}}
         >
             <div className="relative w-full h-full">
                 <div
@@ -138,5 +142,97 @@ export default function AvatarDisplay({
                 </ModalContent>
             </Modal>
         </Button>
+    );
+}
+
+export default function AvatarDisplay({
+    src,
+    name,
+    size = "md",
+    upload = false,
+    onUploadSuccess,
+    dropdown = false,
+    username,
+    email,
+    clearUser,
+} : {
+    src?: string,
+    name?: string,
+    size?: "sm" | "md" | "lg",
+    upload?: boolean,
+    onUploadSuccess?: (avatarURL: string) => void,
+    dropdown?: boolean,
+    username?: string,
+    email?: string,
+    clearUser?: () => void,
+}) {
+    if (!dropdown) {
+        return (
+            <AvatarContent
+                src={src}
+                name={name}
+                size={size}
+                upload={upload}
+                onUploadSuccess={onUploadSuccess}
+            />
+        );
+    }
+
+    const router = useTransitionRouter();
+
+    function handleLogout() {
+        if (clearUser) {
+            clearUser();
+        }
+        get("/login/logout").then(() => {
+            router.push("/login");
+        });
+    }
+
+    function handleLogin() {
+        router.push("/login");
+    }
+
+    return (
+        <Dropdown placement="bottom-end">
+            <DropdownTrigger className="cursor-pointer flex flex-col items-center justify-center">
+                <div>
+                    <AvatarContent
+                        src={src}
+                        name={name}
+                        size={size}
+                        upload={upload}
+                        onUploadSuccess={onUploadSuccess}
+                    />
+                </div>
+            </DropdownTrigger>
+            <DropdownMenu variant="flat" disabledKeys={["divider-1"]}>
+                {
+                    username || email ? (
+                        <Fragment>
+                            <DropdownItem key="user-info">
+                                <div className="flex flex-col">
+                                    <p className="font-bold">{username}</p>
+                                    <p className="text-default-500 text-sm">{email}</p>
+                                </div>
+                            </DropdownItem>
+                            <DropdownItem key="divider-1">
+                                <Divider/>
+                            </DropdownItem>
+                            <DropdownItem key="settings">
+                                Settings
+                            </DropdownItem>
+                            <DropdownItem key="logout" color="danger" onPress={handleLogout}>
+                                Logout
+                            </DropdownItem>
+                        </Fragment>
+                    ) : (
+                        <DropdownItem key="login" onPress={handleLogin}>
+                            Login
+                        </DropdownItem>
+                    )
+                }
+            </DropdownMenu>
+        </Dropdown>
     );
 }

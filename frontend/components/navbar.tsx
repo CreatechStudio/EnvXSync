@@ -11,11 +11,25 @@ import {I18nNames} from "@/locale/I18nObj";
 import {useChangeLocale, useCurrentLocale, useI18n} from "@/locale/client";
 import {supportedLanguages} from "@/middleware";
 import {Button} from "@heroui/button";
+import AvatarDisplay from "@/components/AvatarDisplay";
+import {useEffect, useState} from "react";
+import {User} from "../../lib/types/user";
+import {useTransitionRouter} from "next-transition-router";
 
 export default function Navbar() {
     const currentLocale = useCurrentLocale();
     const setLocale = useChangeLocale();
     const t = useI18n();
+    const router = useTransitionRouter();
+
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+            setUser(JSON.parse(userStr));
+        }
+    }, [router]);
 
     return (
         <HeroUINavbar maxWidth="xl" position="sticky">
@@ -50,7 +64,7 @@ export default function Navbar() {
             </NavbarContent>
 
             <NavbarContent
-                className="hidden sm:flex basis-1/5 sm:basis-full"
+                className="hidden sm:flex basis-1/5 sm:basis-full items-center"
                 justify="end"
             >
                 <NavbarItem>
@@ -85,6 +99,19 @@ export default function Navbar() {
                             ))
                         }
                     </Autocomplete>
+                </NavbarItem>
+
+                <NavbarItem>
+                    <AvatarDisplay
+                        dropdown
+                        src={user?.avatarURL}
+                        username={user?.name}
+                        email={user?.email}
+                        clearUser={() => {
+                            localStorage.removeItem("user");
+                            setUser(null);
+                        }}
+                    />
                 </NavbarItem>
             </NavbarContent>
         </HeroUINavbar>
