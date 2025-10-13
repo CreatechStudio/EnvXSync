@@ -48,5 +48,10 @@
   "Forgot Password?": "Forgot Password?",
   "No account yet? Sign Up Now!": "No Account Yet? Sign Up Now!",
   "Settings": "Settings",
-  "Logout": "Logout"
+  "Logout": "Logout",
+  "Reset Password": "Reset Password",
+  "Reset Password By Email": "Reset Password By Email",
+  "New Password": "New Password",
+  "Confirm New Password": "Confirm New Password",
+  "Reset": "Reset"
 }

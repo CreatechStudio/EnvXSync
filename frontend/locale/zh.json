@@ -49,5 +49,10 @@
   "Forgot Password?": "忘记了密码？",
   "No account yet? Sign Up Now!": "还没有账号？现在注册！",
   "Settings": "设置",
-  "Logout": "登出"
+  "Logout": "登出",
+  "Reset Password": "重置密码",
+  "Reset Password By Email": "通过电子邮件重置密码",
+  "New Password": "新密码",
+  "Confirm New Password": "确认新密码",
+  "Reset": "重置"
 }
