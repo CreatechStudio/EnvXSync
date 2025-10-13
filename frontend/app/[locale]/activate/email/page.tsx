@@ -9,6 +9,7 @@ import {ApiResponse} from "../../../../../lib/types/api";
 import {useTransitionRouter} from "next-transition-router";
 import {addToast} from "@heroui/toast";
 import {post} from "@/utils/network";
+import {Form} from "@heroui/form";
 
 export default function ActivatePage() {
     const t = useI18n();
@@ -95,42 +96,44 @@ export default function ActivatePage() {
                     <h3 className="font-bold text-large">{t('Activate By Email')}</h3>
                 </div>
             </CardHeader>
-            <CardBody>
-                <div className="flex flex-col justify-center items-center w-full overflow-hidden">
-                    <InputOtp
-                        length={6}
-                        value={otp}
-                        allowedKeys="^[0-9a-zA-Z]*$"
-                        onValueChange={(value) => setOtp(value.toUpperCase())}
-                        variant="flat"
-                        description={t('Please enter the 6-digit code sent to your email.')}
-                        classNames={{
-                            base: "flex flex-col w-full items-center justify-center gap-1",
-                            description: "text-default-500 font-medium text-sm",
-                            segmentWrapper: "gap-3",
-                            errorMessage: "text-danger-600 font-medium text-sm",
-                        }}
-                    />
-                </div>
-            </CardBody>
-            <CardFooter>
-                <div className="flex flex-row items-center justify-between w-full">
-                    {
-                        remainSeconds === 0 ? (
-                            <Button variant="flat" onPress={handleResendCode} isLoading={resendCodeLoading}>
-                                {t('Resend Code')}
-                            </Button>
-                        ) : (
-                            <Button variant="flat" isDisabled ref={remainSecondBtRef}>
-                                {t('Resend Code')} ({remainSeconds}s)
-                            </Button>
-                        )
-                    }
-                    <Button color="primary" onPress={handleSubmit} isDisabled={!nextEnabled} isLoading={submitLoading}>
-                        {t('Activate & Login')}
-                    </Button>
-                </div>
-            </CardFooter>
+            <Form onSubmit={(e) => {e.preventDefault(); handleSubmit()}}>
+                <CardBody>
+                    <div className="flex flex-col justify-center items-center w-full overflow-hidden">
+                        <InputOtp
+                            length={6}
+                            value={otp}
+                            allowedKeys="^[0-9a-zA-Z]*$"
+                            onValueChange={(value) => setOtp(value.toUpperCase())}
+                            variant="flat"
+                            description={t('Please enter the 6-digit code sent to your email.')}
+                            classNames={{
+                                base: "flex flex-col w-full items-center justify-center gap-1",
+                                description: "text-default-500 font-medium text-sm",
+                                segmentWrapper: "gap-3",
+                                errorMessage: "text-danger-600 font-medium text-sm",
+                            }}
+                        />
+                    </div>
+                </CardBody>
+                <CardFooter>
+                    <div className="flex flex-row items-center justify-between w-full">
+                        {
+                            remainSeconds === 0 ? (
+                                <Button variant="flat" onPress={handleResendCode} isLoading={resendCodeLoading}>
+                                    {t('Resend Code')}
+                                </Button>
+                            ) : (
+                                <Button variant="flat" isDisabled ref={remainSecondBtRef}>
+                                    {t('Resend Code')} ({remainSeconds}s)
+                                </Button>
+                            )
+                        }
+                        <Button color="primary" type="submit" isDisabled={!nextEnabled} isLoading={submitLoading}>
+                            {t('Activate & Login')}
+                        </Button>
+                    </div>
+                </CardFooter>
+            </Form>
         </Card>
     );
 }
