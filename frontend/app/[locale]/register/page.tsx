@@ -43,12 +43,24 @@ export default function RegisterPage() {
                         passwordHash: sha256(password)
                     }).then((data: ApiResponse<User>) => {
                         if (data.success && !data.data?.isVerified) {
-                            post('/token/generate', {
-                                type: "email_verification",
-                                email: ""
-                            }).then((data: ApiResponse<Token>) => {
+                            post('/user/avatar', {
+                                avatarUrl: avatarUrl,
+                            }).then((data: ApiResponse) => {
                                 if (data.success) {
-                                    router.push("/activate/email");
+                                    post('/token/generate', {
+                                        type: "email_verification",
+                                        email: ""
+                                    }).then((data: ApiResponse<Token>) => {
+                                        if (data.success) {
+                                            router.push("/activate/email");
+                                        } else {
+                                            addToast({
+                                                title: data.error,
+                                                color: "danger"
+                                            });
+                                            setLoading(false);
+                                        }
+                                    });
                                 } else {
                                     addToast({
                                         title: data.error,

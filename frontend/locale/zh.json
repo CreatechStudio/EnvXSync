@@ -45,5 +45,7 @@
   "refresh": "刷新",
   "or try again later": "或稍后再试",
   ".": " ",
-  "Login": "登录"
+  "Login": "登录",
+  "Forgot Password?": "忘记了密码？",
+  "No account yet? Sign Up Now!": "还没有账号？现在注册！"
 }

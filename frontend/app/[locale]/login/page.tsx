@@ -12,6 +12,7 @@ import {User} from "../../../../lib/types/user";
 import {useTransitionRouter} from "next-transition-router";
 import {addToast} from "@heroui/toast";
 import {get, post} from "@/utils/network";
+import {Link} from "@heroui/link";
 
 export default function LoginPage() {
     const t = useI18n();
@@ -82,7 +83,15 @@ export default function LoginPage() {
                     </div>
                 </CardBody>
                 <CardFooter>
-                    <div className="w-full flex flex-row-reverse">
+                    <div className="w-full flex flex-row justify-between items-center">
+                        <div className="flex flex-col justify-start pl-3 gap-1">
+                            <Link href="/forgot-password" color="foreground" className="hover:text-primary select-none text-sm">
+                                {t('Forgot Password?')}
+                            </Link>
+                            <Link href="/register" color="foreground" className="hover:text-primary select-none text-sm">
+                                {t('No account yet? Sign Up Now!')}
+                            </Link>
+                        </div>
                         <Button type="submit" color="primary" isDisabled={!nextEnabled} isLoading={loading}>
                             {t('Next')}
                         </Button>
