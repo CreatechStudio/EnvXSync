@@ -22,6 +22,7 @@ export const LoginRoute = new Elysia()
     .group('login', (app) => app
         .get('logout', ({ cookie: { auth } }) => {
             auth.remove();
+            return { success: true } as ApiResponse;
         })
         .post('verify', async ({ jwt, body }) => {
             try {
