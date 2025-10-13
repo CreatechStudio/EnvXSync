@@ -47,5 +47,7 @@
   ".": " ",
   "Login": "登录",
   "Forgot Password?": "忘记了密码？",
-  "No account yet? Sign Up Now!": "还没有账号？现在注册！"
+  "No account yet? Sign Up Now!": "还没有账号？现在注册！",
+  "Settings": "设置",
+  "Logout": "登出"
 }

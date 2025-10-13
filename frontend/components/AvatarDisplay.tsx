@@ -9,6 +9,7 @@ import {Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger} 
 import {Divider} from "@heroui/divider";
 import {useTransitionRouter} from "next-transition-router";
 import {get} from "@/utils/network";
+import {useI18n} from "@/locale/client";
 
 function getSize(size: "sm" | "md" | "lg") {
     switch (size) {
@@ -179,6 +180,7 @@ export default function AvatarDisplay({
     }
 
     const router = useTransitionRouter();
+    const t = useI18n();
 
     function handleLogout() {
         if (clearUser) {
@@ -220,15 +222,15 @@ export default function AvatarDisplay({
                                 <Divider/>
                             </DropdownItem>
                             <DropdownItem key="settings">
-                                Settings
+                                {t('Settings')}
                             </DropdownItem>
                             <DropdownItem key="logout" color="danger" onPress={handleLogout}>
-                                Logout
+                                {t('Logout')}
                             </DropdownItem>
                         </Fragment>
                     ) : (
                         <DropdownItem key="login" onPress={handleLogin}>
-                            Login
+                            {t('Login')}
                         </DropdownItem>
                     )
                 }
