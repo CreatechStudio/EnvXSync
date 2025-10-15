@@ -29,7 +29,7 @@ export default function LoginPage() {
         }
     }, [email, password]);
 
-    function handleSubmit() {
+    async function handleSubmit() {
         if (nextEnabled) {
             setLoading(true);
 
@@ -41,7 +41,7 @@ export default function LoginPage() {
                     if (data.data) {
                         if (data.data.isVerified) {
                             localStorage.setItem("user", JSON.stringify(data.data));
-                            router.push("/");
+                            router.push("/project");
                         } else {
                             router.push("/activate/email");
                         }

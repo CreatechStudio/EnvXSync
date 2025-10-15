@@ -7,6 +7,7 @@ import {groupTable} from "../db/group";
 import {tokenTable} from "../db/token";
 import dayjs from "dayjs";
 import {Token} from "../../../lib/types/token";
+import * as argon2 from "argon2";
 
 export class UserRuntime {
     async _isFirstUser() {
@@ -43,13 +44,20 @@ export class UserRuntime {
         const user = await db
             .select()
             .from(userTable)
-            .where(sql`${userTable.email} = ${email} and ${userTable.password} = ${passwordHash}`)
+            .where(sql`${userTable.email} = ${email}`)
             .limit(1)
             .then(res => res[0]) as User;
         if (!user) {
             throw "Email or password is incorrect";
         }
-        if (user) user.password = "";
+        let valid = false;
+        if (user.password != null) {
+            valid = await argon2.verify(user.password, passwordHash);
+        }
+        if (!valid) {
+            throw "Email or password is incorrect";
+        }
+        user.password = "";
         return user;
     }
 
@@ -78,10 +86,11 @@ export class UserRuntime {
     async newPasswordUser(name: string, email: string, passwordHash: string) {
         const shouldBeAdmin = await this._isFirstUser();
         try {
+            const argonPasswordHash = await argon2.hash(passwordHash);
             let newUser = await db.insert(userTable).values({
                 name: name,
                 email: email,
-                password: passwordHash,
+                password: argonPasswordHash,
                 role: shouldBeAdmin ? 'admin' : 'user',
                 groupIDs: ["0"]
             }).returning().then(res => res[0]) as User;

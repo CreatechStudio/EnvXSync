@@ -28,7 +28,7 @@ export default function RegisterPage() {
     const [nextEnabled, setNextEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    function handleSubmit() {
+    async function handleSubmit() {
         if (nextEnabled) {
             setLoading(true);
 
