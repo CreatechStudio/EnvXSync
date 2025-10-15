@@ -1,7 +1,7 @@
 export interface Project {
     id: string;
     name: string;
-    description?: string;
+    description: string;
     reloadOnChange: boolean;
     reloadCommand?: string;
     createdAt: Date;

@@ -24,6 +24,19 @@ export class UserRuntime {
         return group.length === 0;
     }
 
+    async isUserAdmin(userId: string) {
+        const user = await db
+            .select()
+            .from(userTable)
+            .where(sql`${userTable.id} = ${userId}`)
+            .limit(1)
+            .then(res => res[0]) as User;
+        if (user && user.role === 'admin') {
+            return true;
+        }
+        return false;
+    }
+
     async fetch(cookie: string) {
         try {
             let decodedId: string = JSON.parse(base64.decode(cookie.split(".")[1])).id;

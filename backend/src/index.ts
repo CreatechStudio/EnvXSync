@@ -8,6 +8,7 @@ import {UserRoute} from "./route/user";
 import {LoginRoute} from "./route/login";
 import {TokenRoute} from "./route/token";
 import {ip} from "elysia-ip";
+import { ProjectRoute } from "./route/project";
 
 dotenv.config()
 export const BASE_URL = process.env.EXS_BASE_URL || "http://localhost:6000"
@@ -33,6 +34,7 @@ const app = new Elysia()
 
     .use(UserRoute)
     .use(LoginRoute)
+    .use(ProjectRoute)
     .use(TokenRoute)
 
     .get('/ping', () => {return 'Pong!'})

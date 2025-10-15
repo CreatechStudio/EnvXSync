@@ -8,7 +8,7 @@ export const groupTable = pgTable(
         id: text('id').primaryKey()
             .$defaultFn(() => randomUUID()),
         name: text('name').notNull(),
-        description: text('description').default(sql`NULL`),
+        description: text('description').notNull().default(''),
         createdAt: timestamp('created_at').notNull().defaultNow(),
         updatedAt: timestamp('updated_at').notNull().defaultNow(),
     }
