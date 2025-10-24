@@ -11,6 +11,7 @@ export interface Agent {
     version?: string;
     projectIDs: string[];
     taskIDs: string[];
+    creatorID: string;
 }
 
 export interface AgentTask {

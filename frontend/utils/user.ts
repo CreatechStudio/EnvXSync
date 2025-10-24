@@ -1,6 +1,6 @@
 import {User} from "../../lib/types/user";
 
-export function getUserById(userID: string): User {
+export async function getUserById(userID: string): Promise<User> {
     // Placeholder function to simulate fetching user data
     return {
         id: userID,
@@ -9,6 +9,8 @@ export function getUserById(userID: string): User {
         createdAt: new Date(),
         updatedAt: new Date(),
         avatarURL: "https://i.pravatar.cc/150?u=" + userID,
-        groupIDs: []
+        groupIDs: [],
+        isVerified: true,
+        role: "user"
     }
 }

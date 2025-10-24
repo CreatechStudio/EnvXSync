@@ -8,6 +8,28 @@ import {useCurrentLocale, useI18n} from "@/locale/client";
 import OSIcon from "@/components/OSIcon";
 import {useTransitionRouter} from "next-transition-router";
 
+export function AgentStatusChip({
+    status,
+    size = 'md'
+} : {
+    status: Agent['status'],
+    size?: 'sm' | 'md' | 'lg'
+}) {
+    const t = useI18n();
+
+    return (
+        status === "online" ? (
+            <Chip size={size} className="bg-green-600 text-secondary-foreground">{t('Online')}</Chip>
+        ) : status === "offline" ? (
+            <Chip color="default" size={size}>{t('Offline')}</Chip>
+        ) : status === "error" ? (
+            <Chip color="danger" size={size}>{t('Error')}</Chip>
+        ) : status === "pending" ? (
+            <Chip color="secondary" size={size}>{t('Pending')}</Chip>
+        ) : null
+    );
+}
+
 export default function AgentCard({
     agent,
     onDelete,
@@ -29,7 +51,7 @@ export default function AgentCard({
     }
 
     function handlePress() {
-        router.push(`/agents/${agent.id}`);
+        router.push(`/agent/${agent.id}`);
     }
 
     return (
@@ -38,17 +60,7 @@ export default function AgentCard({
                 <div className="w-full flex flex-row items-center justify-between">
                     <div className="flex flex-row gap-3 items-center justify-start">
                         <h3 className="font-bold">{agent.name}</h3>
-                        {
-                            agent.status === "online" ? (
-                                <Chip size="sm" className="bg-green-600 text-secondary-foreground">{t('Online')}</Chip>
-                            ) : agent.status === "offline" ? (
-                                <Chip color="default" size="sm">{t('Offline')}</Chip>
-                            ) : agent.status === "error" ? (
-                                <Chip color="danger" size="sm">{t('Error')}</Chip>
-                            ) : agent.status === "pending" ? (
-                                <Chip color="secondary" size="sm">{t('Pending')}</Chip>
-                            ) : null
-                        }
+                        <AgentStatusChip status={agent.status}/>
                     </div>
                     {
                         showDelete ? (
@@ -70,7 +82,9 @@ export default function AgentCard({
                     {
                         agent.os ? (
                             <div className="flex flex-row items-center gap-2">
-                                <OSIcon os={agent.os} className="text-default-500"/>
+                                <div>
+                                    <OSIcon os={agent.os} className="text-default-500"/>
+                                </div>
                                 <p className="text-default-500 text-sm">{t('OS')}{t(':')}{
                                     agent.arch ? (
                                         `${agent.os} - ${agent.arch}`

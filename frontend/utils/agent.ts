@@ -12,7 +12,8 @@ export const SAMPLE_AGENTS: Agent[] = [
         ipAddress: "10.217.35.29",
         taskIDs: [],
         os: "Linux",
-        arch: "arm64"
+        arch: "arm64",
+        creatorID: "1"
     },
     {
         id: "2",
@@ -25,7 +26,8 @@ export const SAMPLE_AGENTS: Agent[] = [
         ipAddress: "120.117.52.173",
         taskIDs: [],
         os: "Windows",
-        arch: "x64"
+        arch: "x64",
+        creatorID: "2"
     },
     {
         id: "3",
@@ -36,7 +38,8 @@ export const SAMPLE_AGENTS: Agent[] = [
         updatedAt: new Date(),
         projectIDs: ["1", "2"],
         taskIDs: [],
-        os: "macOS"
+        os: "macOS",
+        creatorID: "1"
     },
     {
         id: "4",
@@ -46,6 +49,12 @@ export const SAMPLE_AGENTS: Agent[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         projectIDs: ["1", "2"],
-        taskIDs: []
+        taskIDs: [],
+        creatorID: "1"
     }
 ];
+
+export function getAgentById(agentID: string): Agent | null {
+    const a = SAMPLE_AGENTS.filter((agent: Agent) => agent.id === agentID);
+    return a.length > 0 ? a[0] : null;
+}

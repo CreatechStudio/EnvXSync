@@ -38,7 +38,9 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
         creatorID: "123",
-        envVarIDs: ["1", "2", "3"]
+        envVarIDs: ["1", "2", "3"],
+        reloadOnChange: false,
+        updatedBy: ""
     },
     {
         id: "2",
@@ -47,7 +49,9 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2025-10-01T10:00:00Z'),
         creatorID: "234",
-        envVarIDs: ["1", "2", "3"]
+        envVarIDs: ["1", "2", "3"],
+        reloadOnChange: false,
+        updatedBy: ""
     },
     {
         id: "3",
@@ -56,7 +60,9 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2025-03-01T10:00:00Z'),
         creatorID: "234",
-        envVarIDs: []
+        envVarIDs: [],
+        reloadOnChange: false,
+        updatedBy: ""
     },
     {
         id: "4",
@@ -65,7 +71,9 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2024-10-01T10:00:00Z'),
         creatorID: "234",
-        envVarIDs: []
+        envVarIDs: [],
+        reloadOnChange: false,
+        updatedBy: ""
     },
     {
         id: "5",
@@ -74,7 +82,9 @@ const PROJECT_SAMPLE_DATA: Project[] = [
         createdAt: new Date(),
         updatedAt: new Date('2023-10-01T10:00:00Z'),
         creatorID: "234",
-        envVarIDs: []
+        envVarIDs: [],
+        reloadOnChange: false,
+        updatedBy: ""
     }
 ];
 

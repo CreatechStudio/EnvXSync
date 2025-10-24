@@ -1,20 +1,20 @@
 import { FaLinux, FaWindows, FaApple } from "react-icons/fa";
 
-export default function OSIcon({os, className} : {os?: string, className?: string}) {
+export default function OSIcon({os, className, size} : {os?: string, className?: string, size?: number}) {
     const osString = os ? os.toLowerCase() : "";
 
     switch (osString) {
         case 'linux':
             return (
-                <FaLinux className={className}/>
+                <FaLinux className={className} size={size}/>
             );
         case 'windows':
             return (
-                <FaWindows className={className}/>
+                <FaWindows className={className} size={size}/>
             );
         case 'macos':
             return (
-                <FaApple className={className}/>
+                <FaApple className={className} size={size}/>
             );
         default:
             return null;

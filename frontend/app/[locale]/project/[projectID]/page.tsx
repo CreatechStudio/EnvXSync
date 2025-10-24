@@ -33,8 +33,9 @@ export function ProjectDisplay({
     useEffect(() => {
         // Simulate fetching user data
         setTimeout(() => {
-            const userData = getUserById(project.creatorID);
-            setCreator(userData);
+            getUserById(project.creatorID).then((userData) => {
+                setCreator(userData);
+            });
         }, 500);
 
         setAgents(getProjectAgents(project.id));
@@ -53,7 +54,7 @@ export function ProjectDisplay({
                     {creator ? creator.name : project.creatorID}
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                    <p className="cursor-pointer text-xl font-bold">
+                    <p className="cursor-pointer text-xl lg:text-2xl font-bold">
                         {project.name}
                     </p>
                 </BreadcrumbItem>
@@ -78,7 +79,7 @@ export function ProjectDisplay({
                             aria-label={t('New Environment Variable')}
                             color="primary"
                             isIconOnly
-                            size="sm"
+                            size="md"
                             className="inline-flex lg:hidden"
                         >
                             <LuPlus size={20}/>
@@ -108,7 +109,7 @@ export function ProjectDisplay({
                             aria-label={t('Add Agent')}
                             color="primary"
                             isIconOnly
-                            size="sm"
+                            size="md"
                             className="inline-flex lg:hidden"
                         >
                             <LuPlus size={20}/>

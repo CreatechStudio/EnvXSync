@@ -53,5 +53,15 @@
   "Reset Password By Email": "Reset Password By Email",
   "New Password": "New Password",
   "Confirm New Password": "Confirm New Password",
-  "Reset": "Reset"
+  "Reset": "Reset",
+  "Agent Details": "Agent Details",
+  "Edit Agent": "Edit Agent",
+  "Creator": "Creator",
+  "Created At": "Created At",
+  "Arch": "Arch",
+  "Version": "Version",
+  "Agent Tasks": "Agent Tasks",
+  "New Agent Task": "New Agent Task",
+  "Command": "Command",
+  "Result": "Result"
 }

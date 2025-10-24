@@ -54,5 +54,15 @@
   "Reset Password By Email": "通过电子邮件重置密码",
   "New Password": "新密码",
   "Confirm New Password": "确认新密码",
-  "Reset": "重置"
+  "Reset": "重置",
+  "Agent Details": "Agent 详情",
+  "Edit Agent": "编辑 Agent",
+  "Creator": "创建者",
+  "Created At": "创建于",
+  "Arch": "架构",
+  "Version": "版本",
+  "Agent Tasks": "Agent 任务",
+  "New Agent Task": "新建 Agent 任务",
+  "Command": "命令",
+  "Result": "结果"
 }
