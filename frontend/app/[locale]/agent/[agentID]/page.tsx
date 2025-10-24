@@ -1,13 +1,13 @@
 "use client";
 
 import {useParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Alert} from "@heroui/alert";
 import {Button} from "@heroui/button";
 import {LuPencil, LuPlus, LuRotateCw} from "react-icons/lu";
 import LoadingIcon from "@/components/LoadingIcon";
-import {Agent} from "../../../../../lib/types/agent";
-import {getAgentById} from "@/utils/agent";
+import {Agent, AgentTask} from "../../../../../lib/types/agent";
+import {getAgentById, getAgentTasks} from "@/utils/agent";
 import OSIcon from "@/components/OSIcon";
 import {AgentStatusChip} from "@/components/AgentCard";
 import {Tooltip} from "@heroui/tooltip";
@@ -17,6 +17,7 @@ import {getUserById} from "@/utils/user";
 import {Card, CardBody} from "@heroui/card";
 import {getRelativeTime} from "@/utils/time";
 import AgentTasksTable from "@/components/AgentTasksTable";
+import {Checkbox} from "@heroui/checkbox";
 
 export function AgentDisplay({
     agent
@@ -26,13 +27,24 @@ export function AgentDisplay({
     const t = useI18n();
     const [creator, setCreator] = useState<User | null>(null);
     const locale = useCurrentLocale();
-    const [agentTasks, setAgentTasks] = useState([]);
+    const [agentTasks, setAgentTasks] = useState<AgentTask[]>([]);
+    const hideCompletedRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         getUserById(agent.creatorID).then((user) => {
             setCreator(user);
         });
+        setAgentTasks(getAgentTasks(agent.id));
     }, []);
+
+    function handleTasksFilter(task: AgentTask) {
+        if (hideCompletedRef.current) {
+            if (hideCompletedRef.current.checked && task.status === "completed") {
+                return false;
+            }
+        }
+        return true;
+    }
 
     return (
         <div className="flex flex-col gap-6 lg:gap-12">
@@ -116,28 +128,35 @@ export function AgentDisplay({
             <div className="flex flex-col gap-6">
                 <div className="w-full flex flex-row items-center justify-between">
                     <h3 className="font-bold text-xl">{t('Agent Tasks')}</h3>
-                    <Button
-                        aria-label={t('New Agent Task')}
-                        color="primary"
-                        startContent={<LuPlus size={20}/>}
-                        className="hidden lg:inline-flex"
-                    >
-                        {t('New Agent Task')}
-                    </Button>
-                    <Tooltip
-                        content={t('New Agent Task')}
-                        placement="bottom"
-                    >
+                    <div className="flex flex-row items-center gap-3 md:gap-6">
+                        <Checkbox ref={hideCompletedRef} defaultChecked onValueChange={() => {
+                            setAgentTasks(getAgentTasks(agent.id).filter(handleTasksFilter));
+                        }}>
+                            {t('Hide Completed')}
+                        </Checkbox>
                         <Button
                             aria-label={t('New Agent Task')}
                             color="primary"
-                            isIconOnly
-                            size="md"
-                            className="inline-flex lg:hidden"
+                            startContent={<LuPlus size={20}/>}
+                            className="hidden lg:inline-flex"
                         >
-                            <LuPlus size={20}/>
+                            {t('New Agent Task')}
                         </Button>
-                    </Tooltip>
+                        <Tooltip
+                            content={t('New Agent Task')}
+                            placement="bottom"
+                        >
+                            <Button
+                                aria-label={t('New Agent Task')}
+                                color="primary"
+                                isIconOnly
+                                size="md"
+                                className="inline-flex lg:hidden"
+                            >
+                                <LuPlus size={20}/>
+                            </Button>
+                        </Tooltip>
+                    </div>
                 </div>
                 <AgentTasksTable agentTasks={agentTasks}/>
             </div>
@@ -152,7 +171,7 @@ export default function AgentDetailPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Simulate fetching project data
+        // Simulate fetching data
         setTimeout(() => {
             const agentData = getAgentById(agentID);
             if (agentData) {

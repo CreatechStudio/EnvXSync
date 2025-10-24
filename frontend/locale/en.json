@@ -63,5 +63,9 @@
   "Agent Tasks": "Agent Tasks",
   "New Agent Task": "New Agent Task",
   "Command": "Command",
-  "Result": "Result"
+  "Result": "Result",
+  "Hide Completed": "Hide Completed",
+  "Completed": "Completed",
+  "Failed": "Failed",
+  "In Progress": "In Progress"
 }

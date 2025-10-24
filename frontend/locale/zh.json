@@ -64,5 +64,9 @@
   "Agent Tasks": "Agent 任务",
   "New Agent Task": "新建 Agent 任务",
   "Command": "命令",
-  "Result": "结果"
+  "Result": "结果",
+  "Hide Completed": "隐藏已完成",
+  "Completed": "已完成",
+  "Failed": "失败",
+  "In Progress": "进行中"
 }
