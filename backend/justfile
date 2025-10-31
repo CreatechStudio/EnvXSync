@@ -1,0 +1,13 @@
+set windows-shell := ["powershell.exe", "-c"]
+
+@default:
+	just --list
+
+@dev:
+	echo "Starting database service..."
+	cd ../compose; \
+	docker compose -f ./backend.test.yml up -d
+	echo "Installing dependencies..."
+	bun i
+	echo "Starting backend development server..."
+	bun run dev

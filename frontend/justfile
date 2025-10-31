@@ -1,0 +1,10 @@
+set windows-shell := ["powershell.exe", "-c"]
+
+@default:
+	just --list
+
+@dev:
+	echo "Installing dependencies..."
+	pnpm i
+	echo "Starting frontend development server..."
+	pnpm run dev
