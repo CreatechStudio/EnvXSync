@@ -2,6 +2,9 @@ import {Project} from "../../lib/types/project";
 import {Agent} from "../../lib/types/agent";
 import {SAMPLE_AGENTS} from "@/utils/agent";
 import {EnvVar} from "../../lib/types/env_var";
+import {get} from "@/utils/network";
+import {ApiResponse} from "../../lib/types/api";
+import {addToast} from "@heroui/toast";
 
 const ENV_VAR_SAMPLE_DATA: EnvVar[] = [
     {
@@ -88,8 +91,36 @@ const PROJECT_SAMPLE_DATA: Project[] = [
     }
 ];
 
-export function getProjects(): Project[] {
-    return PROJECT_SAMPLE_DATA;
+export async function getProjects(): Promise<Project[]> {
+    return await get("/project/info/fetch").then((data: ApiResponse<Project[]>) => {
+        if (data.success) {
+            if (data.data) {
+                const p: Project[] = [];
+                data.data.forEach((project) => {
+                    p.push({
+                        ...project,
+                        updatedAt: new Date(project.updatedAt),
+                        createdAt: new Date(project.createdAt),
+                    });
+                });
+                return p;
+            } else {
+                return [];
+            }
+        } else {
+            addToast({
+                title: data.error,
+                color: "danger"
+            });
+            return [];
+        }
+    }).catch(() => {
+        addToast({
+            title: "Failed to fetch project list",
+            color: "danger"
+        });
+        return [];
+    });
 }
 
 export function getProjectById(projectID: string): Project | null {

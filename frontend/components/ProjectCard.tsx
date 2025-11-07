@@ -28,7 +28,13 @@ export default function ProjectCard({
             <CardHeader>
                 <div className="flex flex-col w-full gap-2 justify-center items-start">
                     <h3 className="font-bold text-large">{project.name}</h3>
-                    <p className="text-default-500 text-sm text-start">{project.description}</p>
+                    <p className="text-default-500 text-sm text-start">
+                        {
+                            project.description
+                                ? project.description
+                                : (<div>&nbsp;</div>)
+                        }
+                    </p>
                 </div>
             </CardHeader>
             <CardBody>
