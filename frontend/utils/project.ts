@@ -92,7 +92,7 @@ const PROJECT_SAMPLE_DATA: Project[] = [
 ];
 
 export async function getProjects(): Promise<Project[]> {
-    return await get("/project/info/fetch").then((data: ApiResponse<Project[]>) => {
+    return await get("/project/info/list").then((data: ApiResponse<Project[]>) => {
         if (data.success) {
             if (data.data) {
                 const p: Project[] = [];

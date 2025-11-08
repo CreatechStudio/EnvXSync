@@ -4,9 +4,13 @@ import ProjectRuntime from "../runtime/project";
 import PermissionRuntime from "../runtime/permission";
 import {ApiResponse} from "../../../lib/types/api";
 import {Project} from "../../../lib/types/project";
+import EnvRuntime from "../runtime/env";
+import {EnvVar} from "../../../lib/types/env_var";
+import {Env} from "bun";
 
 export const ProjectRoute = new Elysia()
     .decorate('project', new ProjectRuntime())
+    .decorate('env', new EnvRuntime())
     .group('project', (app) => app
         .guard(
             {
@@ -30,7 +34,7 @@ export const ProjectRoute = new Elysia()
                     }}
             }, (app) => app
                 .group('info', (app) => app
-                    .get('fetch', async ({ project, cookie: {auth} }) => {
+                    .get('list', async ({ project, cookie: {auth} }) => {
                         try {
                             const decodedId: string = JSON.parse(base64.decode(auth.toString().split(".")[1])).id;
                             const projects = await project.fetchUserProjects(decodedId);
@@ -38,6 +42,20 @@ export const ProjectRoute = new Elysia()
                                 success: true,
                                 data: projects,
                             } as ApiResponse<Project[]>;
+                        } catch (e) {
+                            return {
+                                success: false,
+                                error: e,
+                            } as ApiResponse;
+                        }
+                    })
+                    .get('fetch/:id', async ({ project, params }) => {
+                        try {
+                            const projectDetail = await project.getProjectDetail(params.id);
+                            return {
+                                success: true,
+                                data: projectDetail,
+                            } as ApiResponse<Project>;
                         } catch (e) {
                             return {
                                 success: false,
@@ -72,5 +90,62 @@ export const ProjectRoute = new Elysia()
                         })
                     })
                 )
+                .group('env', (app) => app
+                    .get('fetch/:id', async ({ env, params }) => {
+                        try {
+                            const envVar = await env.getEnvVarByID(params.id);
+                            return {
+                                success: true,
+                                data: envVar,
+                            } as ApiResponse<EnvVar>;
+                        } catch (e) {
+                            return {
+                                success: false,
+                                error: e,
+                            } as ApiResponse;
+                        }
+                    })
+                    .post('create', async ({ env, body }) => {
+                        try {
+                            const newEnvVar = await env.createEnvVar(
+                                body.key,
+                                body.value,
+                                body.isSecret
+                            );
+                            return {
+                                success: true,
+                                data: newEnvVar,
+                            } as ApiResponse<EnvVar>;
+                        } catch (e) {
+                            return {
+                                success: false,
+                                error: e,
+                            } as ApiResponse;
+                        }
+                    }, {
+                        body: t.Object({
+                            key: t.String(),
+                            value: t.String(),
+                            isSecret: t.Boolean(),
+                        })
+                    })
+                    .group('secret', (app) => app
+                        .get('value/:id', async ({ env, params }) => {
+                            try {
+                                const secretValue = await env.getSecretEnvVarValue(params.id);
+                                return {
+                                    success: true,
+                                    data: secretValue,
+                                } as ApiResponse<string>;
+                            } catch (e) {
+                                return {
+                                    success: false,
+                                    error: e,
+                                } as ApiResponse;
+                            }
+                        }
+                    )
+                )
         )
     )
+)
