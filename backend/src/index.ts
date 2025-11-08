@@ -46,7 +46,7 @@ const app = new Elysia()
                 env[key] = localEnv[key] || "";
             }
         });
-        ['EXS_JWT_SECRET', 'EXS_SMTP_PASSWORD'].forEach(key => {
+        ['EXS_JWT_SECRET', 'EXS_ENCRYPT_SECRET', 'EXS_SMTP_PASSWORD'].forEach(key => {
             if (key in env) {
                 delete env[key];
             }
