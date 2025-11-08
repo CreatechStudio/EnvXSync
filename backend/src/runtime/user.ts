@@ -49,7 +49,22 @@ export class UserRuntime {
             if (me) me.password = "";
             return me
         } catch (e) {
-            return undefined;
+            throw "Could not fetch user";
+        }
+    }
+
+    async getUser(id: string) {
+        try {
+            let user = await db
+                .select()
+                .from(userTable)
+                .where(sql`${userTable.id} = ${id}`)
+                .limit(1)
+                .then(res => res[0]) as User;
+            if (user) user.password = "";
+            return user
+        } catch (e) {
+            throw "Could not fetch user";
         }
     }
 

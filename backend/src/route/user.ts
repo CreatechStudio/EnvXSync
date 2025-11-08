@@ -43,6 +43,20 @@ export const UserRoute = new Elysia()
                         } as ApiResponse;
                     }
                 })
+                .get('get/:id', async ({ user, params }) => {
+                    try {
+                        let fetchedUser = await user.getUser(params.id);
+                        return {
+                            success: true,
+                            data: fetchedUser,
+                        } as ApiResponse<User>;
+                    } catch (e) {
+                        return {
+                            success: false,
+                            error: e,
+                        } as ApiResponse
+                    }
+                })
                 .post('avatar', async ({ user, cookie: { auth }, body }) => {
                     try {
                         let userId = JSON.parse(base64.decode(auth.toString().split(".")[1])).id
