@@ -23,6 +23,14 @@ export function NewProjectModalContent({
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit() {
+        if (!name) {
+            addToast({
+                title: t("Some required fields are empty"),
+                color: "warning"
+            });
+            throw "Name cannot be empty";
+        }
+
         setLoading(true);
         post("/project/info/create", {
             name,
