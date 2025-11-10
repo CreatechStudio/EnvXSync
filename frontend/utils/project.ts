@@ -2,7 +2,7 @@ import {Project} from "../../lib/types/project";
 import {Agent} from "../../lib/types/agent";
 import {SAMPLE_AGENTS} from "@/utils/agent";
 import {EnvVar} from "../../lib/types/env_var";
-import {get} from "@/utils/network";
+import {get, post} from "@/utils/network";
 import {ApiResponse} from "../../lib/types/api";
 import {addToast} from "@heroui/toast";
 
@@ -147,24 +147,51 @@ export function getProjectAgents(projectID: string): Agent[] {
     return SAMPLE_AGENTS.filter((agent: Agent) => agent.projectIDs.includes(projectID));
 }
 
-export function getEnvVarsByIds(ids: string[]): EnvVar[] {
-    // const envs = ENV_VAR_SAMPLE_DATA.filter((envVar) => ids.includes(envVar.id));
-    const envs = ENV_VAR_SAMPLE_DATA;
-    const envsCopy: EnvVar[] = [];
-    envs.forEach(envVar => {
-        if (envVar.isSecret) {
-            envsCopy.push({...envVar, value: "********"});
+export async function getEnvVarsByIds(ids: string[]): Promise<EnvVar[]> {
+    return await post("/project/env/fetch/batch", {ids}).then((data: ApiResponse<EnvVar[]>) => {
+        if (data.success && data.data !== undefined) {
+            const envVars: EnvVar[] = [];
+            data.data.forEach((envVar: EnvVar) => {
+                envVars.push({
+                    ...envVar,
+                    updatedAt: new Date(envVar.updatedAt),
+                    createdAt: new Date(envVar.createdAt),
+                    value: envVar.isSecret ? "********" : envVar.value
+                });
+            });
+            return envVars;
         } else {
-            envsCopy.push({...envVar});
+            addToast({
+                title: data.error || "Failed to fetch env vars",
+                color: "danger"
+            });
+            return [];
         }
+    }).catch(() => {
+        addToast({
+            title: "Failed to fetch env vars",
+            color: "danger"
+        });
+        return [];
     });
-    return envsCopy;
 }
 
-export function getEnvVarSecretValueById(id: string): string {
-    const env = ENV_VAR_SAMPLE_DATA.find((envVar) => envVar.id === id);
-    if (env && env.isSecret) {
-        return env.value;
-    }
-    return "";
+export async function getEnvVarSecretValueById(id: string): Promise<string | null> {
+    return await get(`/project/env/secret/value/${id}`).then((data: ApiResponse<string>) => {
+        if (data.success && data.data !== undefined) {
+            return data.data;
+        } else {
+            addToast({
+                title: data.error || "Failed to fetch secret",
+                color: "danger"
+            });
+            return null;
+        }
+    }).catch(() => {
+        addToast({
+            title: "Failed to fetch secret",
+            color: "danger"
+        });
+        return null;
+    });
 }

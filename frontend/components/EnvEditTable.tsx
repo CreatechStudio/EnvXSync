@@ -10,21 +10,19 @@ import {useEffect, useRef, useState} from "react";
 import {getEnvVarSecretValueById} from "@/utils/project";
 import useNewEnvVarModal from "@/components/NewEnvVarModal";
 import {Input} from "@heroui/input";
-import {Kbd} from "@heroui/kbd";
-import {useHotkeys} from "react-hotkeys-hook";
-import {HotkeysEvent} from "react-hotkeys-hook/packages/react-hotkeys-hook/dist/types";
-import {isMac} from "@react-aria/utils";
 import HotKey from "@/components/HotKey";
 
 function TableTop({
     filterValue,
     setFilterValue,
+    projectID,
 } : {
     filterValue: string;
     setFilterValue: (filterValue: string) => void;
+    projectID: string;
 }) {
     const t = useI18n();
-    const [setNewEnvVarModalOpen, NewEnvVarModal] = useNewEnvVarModal();
+    const [setNewEnvVarModalOpen, NewEnvVarModal] = useNewEnvVarModal(projectID);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     function handleFocusSearchInput(keyboardEvent: KeyboardEvent) {
@@ -92,7 +90,7 @@ function TableTop({
     );
 }
 
-export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
+export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], projectID: string}) {
     const t = useI18n();
     const locale = useCurrentLocale();
 
@@ -122,16 +120,17 @@ export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
     }, [envVars, filterValue]);
 
     function handleShowSecret(index: number) {
-        setTimeout(() => {
-            setSecretValues((prev) => {
-                prev[index] = getEnvVarSecretValueById(envVars[index].id);
-                return [...prev];
-            });
-        }, 500);
-
-        setShowSecret((prev) => {
-            prev[index] = true;
-            return [...prev];
+        getEnvVarSecretValueById(envVars[index].id).then((secret) => {
+            if (secret !== null) {
+                setSecretValues((prev) => {
+                    prev[index] = secret;
+                    return [...prev];
+                });
+                setShowSecret((prev) => {
+                    prev[index] = true;
+                    return [...prev];
+                });
+            }
         });
     }
 
@@ -149,7 +148,7 @@ export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
 
     return (
         <Table
-            topContent={<TableTop filterValue={filterValue} setFilterValue={setFilterValue}/>}
+            topContent={<TableTop filterValue={filterValue} setFilterValue={setFilterValue} projectID={projectID}/>}
         >
             <TableHeader>
                 <TableColumn>{t('Key')}</TableColumn>

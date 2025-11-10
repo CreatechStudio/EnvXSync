@@ -28,7 +28,7 @@ export default function HotKey({
                 if (commandIndex !== -1) {
                     cmd[commandIndex] = "command";
                 }
-                return cmd;
+                return [...cmd];
             });
         }
     }, [command]);

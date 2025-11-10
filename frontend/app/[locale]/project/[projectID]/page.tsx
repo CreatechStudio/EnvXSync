@@ -37,7 +37,9 @@ export function ProjectDisplay({
             setCreator(userData);
         });
         setAgents(getProjectAgents(project.id));
-        setEnvVars(getEnvVarsByIds(project.envVarIDs));
+        getEnvVarsByIds(project.envVarIDs).then((vars) => {
+            setEnvVars(vars);
+        });
     }, [project]);
 
     return (
@@ -67,7 +69,7 @@ export function ProjectDisplay({
             <div className="flex flex-col w-full gap-3 lg:gap-6">
                 <SelectableTabs defaultTab="envs">
                     <Tab key="envs" title={<TabTitle title={t('Environment Variables')}/>}>
-                        <EnvEditTable envVars={envVars}/>
+                        <EnvEditTable envVars={envVars} projectID={project.id}/>
                     </Tab>
                     <Tab key="agents" title={<TabTitle title={t('Agents')}/>}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12 w-full">

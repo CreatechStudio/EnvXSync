@@ -11,16 +11,18 @@ import {EnvVar} from "../../lib/types/env_var";
 
 export function NewEnvVarContent({
     isOpen,
-    onOpenChange
+    onOpenChange,
+    projectID
 } : {
     isOpen: boolean;
     onOpenChange: () => void;
+    projectID: string;
 }) {
     const t = useI18n();
     const [name, setName] = useState("");
     const [value, setValue] = useState("");
     const [loading, setLoading] = useState(false);
-    const [isSecrete, setIsSecrete] = useState(true);
+    const [isSecret, setIsSecret] = useState(true);
 
     async function handleSubmit() {
         if (!name || !value) {
@@ -35,10 +37,11 @@ export function NewEnvVarContent({
         post("/project/env/create", {
             key: name,
             value,
-            isSecrete
+            isSecret,
+            bindTo: projectID,
         }).then((data: ApiResponse<EnvVar>) => {
             if (data.success && data.data) {
-                // Add env var to project
+                window.location.reload();
             } else {
                 addToast({
                     title: data.error || "Something went error",
@@ -87,7 +90,7 @@ export function NewEnvVarContent({
                                         value={value}
                                         onValueChange={setValue}
                                     />
-                                    <Checkbox isSelected={isSecrete} onValueChange={setIsSecrete}>
+                                    <Checkbox isSelected={isSecret} onValueChange={setIsSecret}>
                                         {t("Is Secret")}
                                     </Checkbox>
                                 </div>
@@ -112,7 +115,7 @@ export function NewEnvVarContent({
     );
 }
 
-export default function useNewEnvVarModal() : [
+export default function useNewEnvVarModal(projectID: string) : [
     () => void,
     ReactNode
 ] {
@@ -120,6 +123,6 @@ export default function useNewEnvVarModal() : [
 
     return [
         onOpen,
-        <NewEnvVarContent isOpen={isOpen} onOpenChange={onOpenChange}/>
+        <NewEnvVarContent isOpen={isOpen} onOpenChange={onOpenChange} projectID={projectID}/>
     ];
 }
