@@ -68,8 +68,8 @@ export function NewEnvVarContent({
                 {
                     (onClose) => (
                         <Fragment>
-                            <ModalHeader className="flex flex-col gap-1">
-                                New Environment Variable
+                            <ModalHeader className="flex flex-col gap-1 select-none">
+                                {t("New Environment Variable")}
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-6">

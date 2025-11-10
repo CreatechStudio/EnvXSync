@@ -68,7 +68,7 @@ export function NewProjectModalContent({
                 {
                     (onClose) => (
                         <Fragment>
-                            <ModalHeader className="flex flex-col gap-1">
+                            <ModalHeader className="flex flex-col gap-1 select-none">
                                 {t('New Project')}
                             </ModalHeader>
                             <ModalBody>
