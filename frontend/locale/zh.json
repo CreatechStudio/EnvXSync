@@ -75,5 +75,6 @@
   "Name": "名称",
   "Description": "描述",
   "Enter your description...": "输入你的描述...",
-  "Some required fields are empty": "一些必填项为空"
+  "Some required fields are empty": "一些必填项为空",
+  "Search by key...": "使用键搜索..."
 }

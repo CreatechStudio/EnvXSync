@@ -7,135 +7,97 @@ import {getEnvVarsByIds, getProjectAgents, getProjectById} from "@/utils/project
 import {useParams} from "next/navigation";
 import {Alert} from "@heroui/alert";
 import {Button} from "@heroui/button";
-import {LuPlus, LuRotateCw} from "react-icons/lu";
+import {LuRotateCw} from "react-icons/lu";
 import {Breadcrumbs, BreadcrumbItem} from "@heroui/breadcrumbs";
 import { RxSlash } from "react-icons/rx";
 import {User} from "../../../../../lib/types/user";
 import {getUserById} from "@/utils/user";
-import {useCurrentLocale, useI18n} from "@/locale/client";
-import {Tooltip} from "@heroui/tooltip";
+import {useI18n} from "@/locale/client";
 import {Agent} from "../../../../../lib/types/agent";
 import AgentCard from "@/components/AgentCard";
 import EnvEditTable from "@/components/EnvEditTable";
-import SelectableTitle from "@/components/SelectableTitle";
-import useNewEnvVarModal from "@/components/NewEnvVarModal";
 import {clearUrlHash} from "@/utils/network";
+import {Tab} from "@heroui/tabs";
+import SelectableTabs, {TabTitle} from "@/components/SelectableTabs";
+import {EnvVar} from "../../../../../lib/types/env_var";
 
 export function ProjectDisplay({
     project,
-    setProject
 } : {
     project: Project,
-    setProject: (project: Project) => void
 }) {
-    const locale = useCurrentLocale();
     const t = useI18n();
     const [creator, setCreator] = useState<User | null>(null);
     const [agents, setAgents] = useState<Agent[]>([]);
-    const [setNewEnvVarModalOpen, NewEnvVarModal] = useNewEnvVarModal();
+    const [envVars, setEnvVars] = useState<EnvVar[]>([]);
 
     useEffect(() => {
         getUserById(project.creatorID).then((userData) => {
             setCreator(userData);
         });
-
         setAgents(getProjectAgents(project.id));
+        setEnvVars(getEnvVarsByIds(project.envVarIDs));
     }, [project]);
-
-    function handleNewEnvVar() {
-        setNewEnvVarModalOpen();
-    }
 
     return (
         <div className="flex flex-col gap-6 lg:gap-12">
-            <Breadcrumbs
-                size="lg"
-                variant="light"
-                separator={
-                    <RxSlash/>
-                }
-            >
-                <BreadcrumbItem>
-                    {creator ? creator.name : project.creatorID}
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                    <p className="cursor-pointer text-xl lg:text-2xl font-bold select-none" onClick={() => clearUrlHash(true)}>
-                        {project.name}
-                    </p>
-                </BreadcrumbItem>
-            </Breadcrumbs>
-
-            <div className="flex flex-col gap-6">
-                <div className="w-full flex flex-row items-center justify-between">
-                    <SelectableTitle id="envs">
-                        <h3 className="font-bold text-xl">
-                            {t('Environment Variables')}
-                        </h3>
-                    </SelectableTitle>
-                    {NewEnvVarModal}
-                    <Button
-                        aria-label={t('New Environment Variable')}
-                        color="primary"
-                        startContent={<LuPlus size={20}/>}
-                        className="hidden lg:inline-flex"
-                        onPress={handleNewEnvVar}
-                    >
-                        {t('New Environment Variable')}
-                    </Button>
-                    <Tooltip
-                        content={t('New Environment Variable')}
-                        placement="bottom"
-                    >
-                        <Button
-                            aria-label={t('New Environment Variable')}
-                            color="primary"
-                            isIconOnly
-                            size="md"
-                            className="inline-flex lg:hidden"
-                            onPress={handleNewEnvVar}
-                        >
-                            <LuPlus size={20}/>
-                        </Button>
-                    </Tooltip>
-                </div>
-
-                <EnvEditTable envVars={getEnvVarsByIds(project.envVarIDs)}/>
+            <div className="flex flex-col gap-3">
+                <Breadcrumbs
+                    size="lg"
+                    variant="light"
+                    separator={
+                        <RxSlash/>
+                    }
+                >
+                    <BreadcrumbItem>
+                        {creator ? creator.name : project.creatorID}
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                        <p className="cursor-pointer text-xl lg:text-2xl font-bold select-none" onClick={() => clearUrlHash(true)}>
+                            {project.name}
+                        </p>
+                    </BreadcrumbItem>
+                </Breadcrumbs>
+                <p className="hidden md:block text-sm text-gray-600">
+                    {project.description}
+                </p>
             </div>
 
-            <div className="flex flex-col gap-6">
-                <div className="w-full flex flex-row items-center justify-between">
-                    <SelectableTitle id="agents">
-                        <h3 className="font-bold text-xl">{t('Agents')}</h3>
-                    </SelectableTitle>
-                    <Button
-                        aria-label={t('Add Agent')}
-                        color="primary"
-                        startContent={<LuPlus size={20}/>}
-                        className="hidden lg:inline-flex"
-                    >
-                        {t('Add Agent')}
-                    </Button>
-                    <Tooltip
-                        content={t('Add Agent')}
-                        placement="bottom"
-                    >
-                        <Button
-                            aria-label={t('Add Agent')}
-                            color="primary"
-                            isIconOnly
-                            size="md"
-                            className="inline-flex lg:hidden"
-                        >
-                            <LuPlus size={20}/>
-                        </Button>
-                    </Tooltip>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12">
-                    {agents.map((agent) => (
-                        <AgentCard agent={agent} key={agent.id} showDelete/>
-                    ))}
-                </div>
+            <div className="flex flex-col w-full gap-3 lg:gap-6">
+                <SelectableTabs defaultTab="envs">
+                    <Tab key="envs" title={<TabTitle title={t('Environment Variables')}/>}>
+                        <EnvEditTable envVars={envVars}/>
+                    </Tab>
+                    <Tab key="agents" title={<TabTitle title={t('Agents')}/>}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12 w-full">
+                            {agents.map((agent) => (
+                                <AgentCard agent={agent} key={agent.id} showDelete/>
+                            ))}
+                        </div>
+                        {agents.length === 0 && (
+                            <div className="w-full flex flex-col items-center justify-center">
+                                <Alert
+                                    title="No Agents Found"
+                                    color="danger"
+                                    className="max-w-md"
+                                    variant="faded"
+                                    endContent={
+                                        <Button
+                                            color="danger"
+                                            variant="light"
+                                            isIconOnly
+                                            onPress={() => {window.location.reload()}}
+                                        >
+                                            <LuRotateCw size={20}/>
+                                        </Button>
+                                    }
+                                />
+                            </div>
+                        )}
+                    </Tab>
+                    <Tab key="settings" title={<TabTitle title={t("Settings")}/>}>
+                    </Tab>
+                </SelectableTabs>
             </div>
         </div>
     )
@@ -159,7 +121,7 @@ export default function ProjectDetailPage() {
         <div className="w-full h-full">
             {
                 project ? (
-                    <ProjectDisplay project={project} setProject={setProject}/>
+                    <ProjectDisplay project={project}/>
                 ) : (
                     <div className="flex flex-col items-center justify-center gap-4">
                         {

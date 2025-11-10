@@ -38,6 +38,14 @@ export async function post(endpoint: string, body: any) {
     }).then(data => data);
 }
 
+export function setSearchParams(params: URLSearchParams, reload?: boolean) {
+    if (reload) {
+        window.location.search = params.toString();
+    } else {
+        history.pushState(null, document.title, `?${params.toString()}`);
+    }
+}
+
 export function clearUrlHash(reload?: boolean) {
     history.pushState(null, document.title, window.location.pathname);
     if (reload) {

@@ -3,11 +3,79 @@ import {Checkbox} from "@heroui/checkbox";
 import {getRelativeTime} from "@/utils/time";
 import {Tooltip} from "@heroui/tooltip";
 import {Button} from "@heroui/button";
-import {LuEye, LuEyeClosed, LuPencil, LuTrash2} from "react-icons/lu";
+import {LuEye, LuEyeClosed, LuPencil, LuPlus, LuSearch, LuTrash2} from "react-icons/lu";
 import {useCurrentLocale, useI18n} from "@/locale/client";
 import {EnvVar} from "../../lib/types/env_var";
 import {useEffect, useState} from "react";
 import {getEnvVarSecretValueById} from "@/utils/project";
+import useNewEnvVarModal from "@/components/NewEnvVarModal";
+import {Input} from "@heroui/input";
+
+function TableTop({
+    filterValue,
+    setFilterValue,
+} : {
+    filterValue: string;
+    setFilterValue: (filterValue: string) => void;
+}) {
+    const t = useI18n();
+    const [setNewEnvVarModalOpen, NewEnvVarModal] = useNewEnvVarModal();
+
+    function handleClear() {
+        setFilterValue("");
+    }
+
+    function handleNewEnvVar() {
+        setNewEnvVarModalOpen();
+    }
+
+    function handleSearchChange(value?: string) {
+        if (value) {
+            setFilterValue(value);
+        } else {
+            setFilterValue("");
+        }
+    }
+
+    return (
+        <div className="flex flex-row w-full justify-between items-center gap-3 lg:gap-6">
+            <Input
+                isClearable
+                className="w-full lg:max-w-[40%]"
+                placeholder={t("Search by key...")}
+                startContent={<LuSearch/>}
+                value={filterValue}
+                onClear={() => handleClear()}
+                onValueChange={handleSearchChange}
+            />
+
+            <Button
+                aria-label={t('New Environment Variable')}
+                color="primary"
+                startContent={<LuPlus size={20}/>}
+                className="hidden lg:inline-flex"
+                onPress={handleNewEnvVar}
+            >
+                {t('New Environment Variable')}
+            </Button>
+            <Tooltip
+                content={t('New Environment Variable')}
+                placement="bottom"
+            >
+                <Button
+                    aria-label={t('New Environment Variable')}
+                    color="primary"
+                    isIconOnly
+                    className="inline-flex lg:hidden"
+                    onPress={handleNewEnvVar}
+                >
+                    <LuPlus size={22}/>
+                </Button>
+            </Tooltip>
+            {NewEnvVarModal}
+        </div>
+    );
+}
 
 export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
     const t = useI18n();
@@ -15,11 +83,28 @@ export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
 
     const [showSecret, setShowSecret] = useState<boolean[]>([]);
     const [secretValues, setSecretValues] = useState<string[]>([]);
+    const [filteredEnvVars, setFilteredEnvVars] = useState<EnvVar[]>(envVars);
+    const [filterValue, setFilterValue] = useState<string>("");
 
     useEffect(() => {
         setShowSecret([...Array(envVars.length).fill(false)]);
         setSecretValues([...Array(envVars.length).fill('')]);
     }, [envVars]);
+
+    useEffect(() => {
+        if (filterValue) {
+            const vars: EnvVar[] = [];
+            const lowerFilterValue = filterValue.toLowerCase();
+            envVars.forEach((envVar) => {
+                if (envVar.key.toLowerCase().includes(lowerFilterValue)) {
+                    vars.push(envVar);
+                }
+            });
+            setFilteredEnvVars(vars);
+        } else {
+            setFilteredEnvVars(envVars);
+        }
+    }, [envVars, filterValue]);
 
     function handleShowSecret(index: number) {
         setTimeout(() => {
@@ -48,7 +133,9 @@ export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
     }
 
     return (
-        <Table>
+        <Table
+            topContent={<TableTop filterValue={filterValue} setFilterValue={setFilterValue}/>}
+        >
             <TableHeader>
                 <TableColumn>{t('Key')}</TableColumn>
                 <TableColumn>{t('Value')}</TableColumn>
@@ -57,7 +144,7 @@ export default function EnvEditTable({envVars} : {envVars: EnvVar[]}) {
                 <TableColumn align="end">{t('Actions')}</TableColumn>
             </TableHeader>
             <TableBody>
-                {envVars.map((envVar, index) => (
+                {filteredEnvVars.map((envVar, index) => (
                     <TableRow key={index}>
                         <TableCell>{envVar.key}</TableCell>
                         <TableCell className="grow">

@@ -148,7 +148,8 @@ export function getProjectAgents(projectID: string): Agent[] {
 }
 
 export function getEnvVarsByIds(ids: string[]): EnvVar[] {
-    const envs = ENV_VAR_SAMPLE_DATA.filter((envVar) => ids.includes(envVar.id));
+    // const envs = ENV_VAR_SAMPLE_DATA.filter((envVar) => ids.includes(envVar.id));
+    const envs = ENV_VAR_SAMPLE_DATA;
     const envsCopy: EnvVar[] = [];
     envs.forEach(envVar => {
         if (envVar.isSecret) {
