@@ -3,7 +3,8 @@ import {envVarTable} from "../db/env_var";
 import {sql} from "drizzle-orm";
 import {EnvVar} from "../../../lib/types/env_var";
 import dotenv from "dotenv";
-import { randomUUID, createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
+import {projectTable} from "../db/project";
 
 dotenv.config()
 const EXS_ENCRYPT_SECRET = process.env.EXS_ENCRYPT_SECRET || undefined
@@ -57,6 +58,25 @@ export default class EnvRuntime {
         }
     }
 
+    async getBatchEnvVarsByIDs(envVarIDs: string[]) {
+        try {
+            let envVars =  await db
+                .select()
+                .from(envVarTable)
+                .where(sql`${envVarTable.id} IN (${sql.join(envVarIDs, sql`,`)})`)
+                .then(res => res as EnvVar[]);
+            envVars = envVars.map(env => {
+                if (env.isSecret) {
+                    env.value = "";
+                }
+                return env;
+            });
+            return envVars;
+        } catch (error) {
+            throw "Could not find env vars";
+        }
+    }
+
     async getSecretEnvVarValue(envVarID: string) {
         try {
             let env =  await db
@@ -78,7 +98,7 @@ export default class EnvRuntime {
         }
     }
 
-    async createEnvVar(key: string, value: string, isSecret: boolean) {
+    async createEnvVar(key: string, value: string, isSecret: boolean, bindTo: string) {
         let storedValue = value
         if (isSecret) {
             if (!EXS_ENCRYPT_SECRET) {
@@ -99,6 +119,23 @@ export default class EnvRuntime {
                 })
                 .returning()
                 .then(res => res[0]) as EnvVar;
+            let project = await db
+                .select()
+                .from(projectTable)
+                .where(sql`${projectTable.id} = ${bindTo}`)
+                .then(res => res[0]);
+            if (!project) {
+                throw "Project not found";
+            }
+            let projectEnvVars = project.envVarIDs || [];
+            projectEnvVars.push(newEnvVar.id);
+            await db
+                .update(projectTable)
+                .set({
+                    envVarIDs: projectEnvVars,
+                    updatedAt: currentTime,
+                })
+                .where(sql`${projectTable.id} = ${bindTo}`);
             if (newEnvVar.isSecret) {
                 newEnvVar.value = "";
             }
