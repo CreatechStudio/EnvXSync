@@ -6,7 +6,6 @@ import {ApiResponse} from "../../../lib/types/api";
 import {Project} from "../../../lib/types/project";
 import EnvRuntime from "../runtime/env";
 import {EnvVar} from "../../../lib/types/env_var";
-import {Env} from "bun";
 
 export const ProjectRoute = new Elysia()
     .decorate('project', new ProjectRuntime())
@@ -105,12 +104,31 @@ export const ProjectRoute = new Elysia()
                             } as ApiResponse;
                         }
                     })
+                    .post('fetch/batch', async ({ env, body }) => {
+                        try {
+                            const envVars = await env.getBatchEnvVarsByIDs(body.ids);
+                            return {
+                                success: true,
+                                data: envVars,
+                            } as ApiResponse<EnvVar[]>;
+                        } catch (e) {
+                            return {
+                                success: false,
+                                error: e,
+                            } as ApiResponse;
+                        }
+                    }, {
+                        body: t.Object({
+                            ids: t.Array(t.String()),
+                        })
+                    })
                     .post('create', async ({ env, body }) => {
                         try {
                             const newEnvVar = await env.createEnvVar(
                                 body.key,
                                 body.value,
-                                body.isSecret
+                                body.isSecret,
+                                body.bindTo
                             );
                             return {
                                 success: true,
@@ -127,6 +145,7 @@ export const ProjectRoute = new Elysia()
                             key: t.String(),
                             value: t.String(),
                             isSecret: t.Boolean(),
+                            bindTo: t.String(),
                         })
                     })
                     .group('secret', (app) => app
