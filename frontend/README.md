@@ -1,6 +1,13 @@
 # EnvXSync Frontend
 
 ## Development
+
+### Auto
+```shell
+just frontend/dev
+```
+
+### Manual
 1. Install dependencies
 ```shell
 pnpm install
@@ -9,10 +16,3 @@ pnpm install
 ```shell
 pnpm dev
 ```
-
-## Technologies Used
-- [Next.js](https://nextjs.org/)
-- [React](https://reactjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [HeroUI](https://www.heroui.com/)

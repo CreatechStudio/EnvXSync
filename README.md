@@ -21,9 +21,26 @@
 
 ## Installation
 
-Comming soon...
+Coming soon...
 
 ## Development
 * [Frontend](./frontend/README.md)
 * [Backend](./backend/README.md)
 * [Agent](./agent/README.md)
+
+> Use `just` to get useful recipes.
+
+## Technologies Used
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [HeroUI](https://www.heroui.com/)
+- [just](https://just.systems/)
+- [ElysiaJS](https://elysiajs.com/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Drizzle ORM](https://orm.drizzle.team/)
+- [Node.js](https://nodejs.org/en)
+- [Bun](https://bun.com/)
+- [react-icons](https://react-icons.github.io/react-icons/)
+- [pnpm](https://pnpm.io/)

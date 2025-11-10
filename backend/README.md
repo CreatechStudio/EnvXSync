@@ -2,6 +2,12 @@
 
 ## Development
 
+### Auto
+```shell
+just backend/dev
+```
+
+### Manual
 1. Enter `compose` directory at project root and run `docker compose -f backend.test.yml up -d` to start local development db.
 2. Create local `.env.development.local` file based on [`.env.example`](./.env.example).
 3. Run `bun run dev` to start the development server. 
