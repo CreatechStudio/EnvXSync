@@ -148,6 +148,9 @@ export function getProjectAgents(projectID: string): Agent[] {
 }
 
 export async function getEnvVarsByIds(ids: string[]): Promise<EnvVar[]> {
+    if (ids.length === 0) {
+        return [];
+    }
     return await post("/project/env/fetch/batch", {ids}).then((data: ApiResponse<EnvVar[]>) => {
         if (data.success && data.data !== undefined) {
             const envVars: EnvVar[] = [];
