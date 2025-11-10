@@ -17,6 +17,7 @@ import {Tooltip} from "@heroui/tooltip";
 import {Agent} from "../../../../../lib/types/agent";
 import AgentCard from "@/components/AgentCard";
 import EnvEditTable from "@/components/EnvEditTable";
+import SelectableTitle from "@/components/SelectableTitle";
 
 export function ProjectDisplay({
     project,
@@ -31,12 +32,9 @@ export function ProjectDisplay({
     const [agents, setAgents] = useState<Agent[]>([]);
 
     useEffect(() => {
-        // Simulate fetching user data
-        setTimeout(() => {
-            getUserById(project.creatorID).then((userData) => {
-                setCreator(userData);
-            });
-        }, 500);
+        getUserById(project.creatorID).then((userData) => {
+            setCreator(userData);
+        });
 
         setAgents(getProjectAgents(project.id));
     }, [project]);
@@ -62,7 +60,11 @@ export function ProjectDisplay({
 
             <div className="flex flex-col gap-6">
                 <div className="w-full flex flex-row items-center justify-between">
-                    <h3 className="font-bold text-xl">{t('Environment Variables')}</h3>
+                    <SelectableTitle id="envs">
+                        <h3 className="font-bold text-xl">
+                            {t('Environment Variables')}
+                        </h3>
+                    </SelectableTitle>
                     <Button
                         aria-label={t('New Environment Variable')}
                         color="primary"
@@ -92,7 +94,9 @@ export function ProjectDisplay({
 
             <div className="flex flex-col gap-6">
                 <div className="w-full flex flex-row items-center justify-between">
-                    <h3 className="font-bold text-xl">{t('Agents')}</h3>
+                    <SelectableTitle id="agents">
+                        <h3 className="font-bold text-xl">{t('Agents')}</h3>
+                    </SelectableTitle>
                     <Button
                         aria-label={t('Add Agent')}
                         color="primary"
@@ -134,15 +138,11 @@ export default function ProjectDetailPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Simulate fetching project data
-        setTimeout(() => {
-            const projectData = getProjectById(projectID);
+        getProjectById(projectID).then((projectData) => {
             if (projectData) {
                 setProject(projectData);
-            } else {
-                setError("Project not found");
             }
-        }, 1000);
+        });
     }, []);
 
     return (

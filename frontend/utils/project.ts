@@ -123,9 +123,24 @@ export async function getProjects(): Promise<Project[]> {
     });
 }
 
-export function getProjectById(projectID: string): Project | null {
-    const p = PROJECT_SAMPLE_DATA.filter((project: Project) => project.id === projectID);
-    return p.length > 0 ? p[0] : null;
+export async function getProjectById(projectID: string): Promise<Project | null> {
+    return await get(`/project/info/fetch/${projectID}`).then((data: ApiResponse<Project>) => {
+        if (data.success && data.data) {
+            return data.data;
+        } else {
+            addToast({
+                title: data.error || "Failed to fetch project details",
+                color: "danger"
+            });
+            return null;
+        }
+    }).catch(() => {
+        addToast({
+            title: "Failed to fetch project details",
+            color: "danger"
+        });
+        return null;
+    });
 }
 
 export function getProjectAgents(projectID: string): Agent[] {
