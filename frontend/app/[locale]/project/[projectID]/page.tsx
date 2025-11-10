@@ -62,7 +62,7 @@ export function ProjectDisplay({
                     </BreadcrumbItem>
                 </Breadcrumbs>
                 <p className="hidden md:block text-sm text-gray-600">
-                    {project.description}
+                    {project.description || t('The man is lazy, no description here!')}
                 </p>
             </div>
 

@@ -76,5 +76,6 @@
   "Description": "描述",
   "Enter your description...": "输入你的描述...",
   "Some required fields are empty": "一些必填项为空",
-  "Search by key...": "使用键搜索..."
+  "Search by key...": "使用键搜索...",
+  "The man is lazy, no description here!": "这个人很懒，什么描述也没有留下"
 }
