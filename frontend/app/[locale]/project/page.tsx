@@ -8,7 +8,7 @@ import {Tooltip} from "@heroui/tooltip";
 import {useI18n} from "@/locale/client";
 import {getProjects} from "@/utils/project";
 import ProjectCard from "@/components/ProjectCard";
-import useNewProjectModal from "@/components/NewProjectModal";
+import useNewProjectModal from "@/components/modals/NewProjectModal";
 
 export default function ProjectPage() {
     const t = useI18n();

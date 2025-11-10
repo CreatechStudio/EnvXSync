@@ -77,5 +77,9 @@
   "Some required fields are empty": "Some required fields are empty",
   "Search by key...": "Search by key...",
   "This man is lazy, no description here!": "This man is lazy, no description here!",
-  "No environment variables for this project. Try to add a new one now!": "No environment variables for this project. Try to add a new one now!"
+  "No environment variables for this project. Try to add a new one now!": "No environment variables for this project. Try to add a new one now!",
+  "Enter": "Enter",
+  "to make sure you decide to delete it.": "to make sure you decide to delete it.",
+  "Delete Environment Variable": "Delete Environment Variable",
+  "Enter here...": "Enter here..."
 }

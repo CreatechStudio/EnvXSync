@@ -78,5 +78,9 @@
   "Some required fields are empty": "一些必填项为空",
   "Search by key...": "使用键搜索...",
   "This man is lazy, no description here!": "这个人很懒，什么描述也没有留下",
-  "No environment variables for this project. Try to add a new one now!": "这个项目还没有环境变量呢~ 试试新建一个吧！"
+  "No environment variables for this project. Try to add a new one now!": "这个项目还没有环境变量呢~ 试试新建一个吧！",
+  "Enter": "输入",
+  "to make sure you decide to delete it.": "以确保你决定删除它",
+  "Delete Environment Variable": "删除环境变量",
+  "Enter here...": "在此输入..."
 }

@@ -1,60 +1,57 @@
-import {Fragment, ReactNode, useState} from "react";
 import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure} from "@heroui/modal";
-import {post} from "@/utils/network";
-import {ApiResponse} from "../../lib/types/api";
-import {addToast} from "@heroui/toast";
-import {Input} from "@heroui/input";
-import {Checkbox} from "@heroui/checkbox";
+import {Fragment, ReactNode, useState} from "react";
+import {Input, Textarea} from "@heroui/input";
 import {Button} from "@heroui/button";
+import {Checkbox} from "@heroui/checkbox";
+import {post} from "@/utils/network";
+import {ApiResponse} from "../../../lib/types/api";
+import {Project} from "../../../lib/types/project";
+import {addToast} from "@heroui/toast";
 import {useI18n} from "@/locale/client";
-import {EnvVar} from "../../lib/types/env_var";
 
-export function NewEnvVarContent({
+export function NewProjectModalContent({
     isOpen,
-    onOpenChange,
-    projectID
+    onOpenChange
 } : {
     isOpen: boolean;
     onOpenChange: () => void;
-    projectID: string;
 }) {
     const t = useI18n();
     const [name, setName] = useState("");
-    const [value, setValue] = useState("");
+    const [description, setDescription] = useState("");
+    const [reloadOnChange, setReloadOnChange] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [isSecret, setIsSecret] = useState(true);
 
     async function handleSubmit() {
-        if (!name || !value) {
+        if (!name) {
             addToast({
                 title: t("Some required fields are empty"),
                 color: "warning"
             });
-            throw "Key or Value cannot be empty";
+            throw "Name cannot be empty";
         }
 
         setLoading(true);
-        post("/project/env/create", {
-            key: name,
-            value,
-            isSecret,
-            bindTo: projectID,
-        }).then((data: ApiResponse<EnvVar>) => {
-            if (data.success && data.data) {
+        post("/project/info/create", {
+            name,
+            description,
+            reloadOnChange
+        }).then((data: ApiResponse<Project>) => {
+            if (data.success) {
                 window.location.reload();
             } else {
                 addToast({
-                    title: data.error || "Something went error",
-                    color: "danger"
+                    title: data.error,
+                    color: "danger",
                 });
             }
             setLoading(false);
         }).catch(() => {
-            addToast({
-                title: "Failed to create environment variable",
-                color: "danger"
-            });
             setLoading(false);
+            addToast({
+                title: "Failed to create new project",
+                color: "danger",
+            });
         });
     }
 
@@ -72,26 +69,26 @@ export function NewEnvVarContent({
                     (onClose) => (
                         <Fragment>
                             <ModalHeader className="flex flex-col gap-1 select-none">
-                                {t("New Environment Variable")}
+                                {t('New Project')}
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-6">
                                     <Input
                                         isRequired
-                                        label={t("Key")}
+                                        label={t("Name")}
                                         type="text"
                                         value={name}
                                         onValueChange={setName}
                                     />
-                                    <Input
-                                        isRequired
-                                        label={t("Value")}
+                                    <Textarea
+                                        label={t("Description")}
+                                        placeholder={t("Enter your description...")}
                                         type="text"
-                                        value={value}
-                                        onValueChange={setValue}
+                                        value={description}
+                                        onValueChange={setDescription}
                                     />
-                                    <Checkbox isSelected={isSecret} onValueChange={setIsSecret}>
-                                        {t("Is Secret")}
+                                    <Checkbox isSelected={reloadOnChange} onValueChange={setReloadOnChange}>
+                                        {t("Reload on Change")}
                                     </Checkbox>
                                 </div>
                             </ModalBody>
@@ -115,7 +112,7 @@ export function NewEnvVarContent({
     );
 }
 
-export default function useNewEnvVarModal(projectID: string) : [
+export default function useNewProjectModal() : [
     () => void,
     ReactNode
 ] {
@@ -123,6 +120,6 @@ export default function useNewEnvVarModal(projectID: string) : [
 
     return [
         onOpen,
-        <NewEnvVarContent isOpen={isOpen} onOpenChange={onOpenChange} projectID={projectID}/>
+        <NewProjectModalContent isOpen={isOpen} onOpenChange={onOpenChange}/>
     ];
 }

@@ -8,9 +8,10 @@ import {useCurrentLocale, useI18n} from "@/locale/client";
 import {EnvVar} from "../../lib/types/env_var";
 import {Fragment, useEffect, useRef, useState} from "react";
 import {getEnvVarSecretValueById} from "@/utils/project";
-import useNewEnvVarModal from "@/components/NewEnvVarModal";
+import useNewEnvVarModal from "@/components/modals/NewEnvVarModal";
 import {Input} from "@heroui/input";
 import HotKey from "@/components/HotKey";
+import useDeleteEnvModal from "@/components/modals/DeleteEnvModal";
 
 function TableTop({
     filterValue,
@@ -98,6 +99,8 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
     const [secretValues, setSecretValues] = useState<string[]>([]);
     const [filteredEnvVars, setFilteredEnvVars] = useState<EnvVar[]>(envVars);
     const [filterValue, setFilterValue] = useState<string>("");
+    const [deleteEnvVar, setDeleteEnvVar] = useState<EnvVar>();
+    const [setDeleteEnvVarModalOpen, DeleteEnvVarModal] = useDeleteEnvModal(deleteEnvVar);
 
     useEffect(() => {
         setShowSecret([...Array(envVars.length).fill(false)]);
@@ -146,6 +149,11 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
         });
     }
 
+    function handleDelete(index: number) {
+        setDeleteEnvVar(envVars[index]);
+        setDeleteEnvVarModalOpen();
+    }
+
     return (
         <Table
             topContent={<TableTop filterValue={filterValue} setFilterValue={setFilterValue} projectID={projectID}/>}
@@ -164,6 +172,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                             <div className="w-full flex flex-col justify-center items-center p-6 lg:p-12 text-lg text-center">
                                 {t('No environment variables for this project. Try to add a new one now!')}
                             </div>
+                            {DeleteEnvVarModal}
                         </TableCell>
                     </TableRow>
                     {filteredEnvVars.map((envVar, index) => (
@@ -191,7 +200,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                             <TableCell>
                                 <div className="relative flex flex-row-reverse">
                                     <Tooltip content={t('Delete')}>
-                                        <Button isIconOnly size="sm" variant="light" color="danger">
+                                        <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => handleDelete(index)}>
                                             <LuTrash2 size={15}/>
                                         </Button>
                                     </Tooltip>
