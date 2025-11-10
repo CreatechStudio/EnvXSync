@@ -67,5 +67,11 @@
   "Hide Completed": "Hide Completed",
   "Completed": "Completed",
   "Failed": "Failed",
-  "In Progress": "In Progress"
+  "In Progress": "In Progress",
+  "Cancel": "Cancel",
+  "Submit": "Submit",
+  "Reload on Change": "Reload on Change",
+  "Name": "Name",
+  "Description": "Description",
+  "Enter your description...": "Enter your description..."
 }

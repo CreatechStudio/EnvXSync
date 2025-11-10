@@ -68,5 +68,11 @@
   "Hide Completed": "隐藏已完成",
   "Completed": "已完成",
   "Failed": "失败",
-  "In Progress": "进行中"
+  "In Progress": "进行中",
+  "Cancel": "取消",
+  "Submit": "提交",
+  "Reload on Change": "修改时重新加载",
+  "Name": "名称",
+  "Description": "描述",
+  "Enter your description...": "输入你的描述..."
 }

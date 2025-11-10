@@ -7,6 +7,7 @@ import {post} from "@/utils/network";
 import {ApiResponse} from "../../lib/types/api";
 import {Project} from "../../lib/types/project";
 import {addToast} from "@heroui/toast";
+import {useI18n} from "@/locale/client";
 
 export function NewProjectModalContent({
     isOpen,
@@ -15,13 +16,13 @@ export function NewProjectModalContent({
     isOpen: boolean;
     onOpenChange: () => void;
 }) {
+    const t = useI18n();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [reloadOnChange, setReloadOnChange] = useState(false);
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit() {
-        console.log(name, description, reloadOnChange);
         setLoading(true);
         post("/project/info/create", {
             name,
@@ -60,39 +61,39 @@ export function NewProjectModalContent({
                     (onClose) => (
                         <Fragment>
                             <ModalHeader className="flex flex-col gap-1">
-                                New Project
+                                {t('New Project')}
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-6">
                                     <Input
                                         isRequired
-                                        label="Name"
+                                        label={t("Name")}
                                         type="text"
                                         value={name}
                                         onValueChange={setName}
                                     />
                                     <Textarea
-                                        label="Description"
-                                        placeholder="Enter your description..."
+                                        label={t("Description")}
+                                        placeholder={t("Enter your description...")}
                                         type="text"
                                         value={description}
                                         onValueChange={setDescription}
                                     />
                                     <Checkbox isSelected={reloadOnChange} onValueChange={setReloadOnChange}>
-                                        Reload on Change
+                                        {t("Reload on Change")}
                                     </Checkbox>
                                 </div>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose} disabled={loading}>
-                                    Cancel
+                                    {t("Cancel")}
                                 </Button>
                                 <Button
                                     color="primary"
                                     onPress={() => {handleSubmit().then(() => onClose())}}
                                     isLoading={loading}
                                 >
-                                    Submit
+                                    {t("Submit")}
                                 </Button>
                             </ModalFooter>
                         </Fragment>
