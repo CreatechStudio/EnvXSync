@@ -1,3 +1,8 @@
+function toLogin() {
+    const current = encodeURI(window.location.href);
+    window.location.href = `/login?from=${current}`;
+}
+
 export async function get(endpoint: string) {
     return fetch(`/api${endpoint}`, {
         method: "GET",
@@ -9,7 +14,7 @@ export async function get(endpoint: string) {
             return res.json();
         } else {
             if (res.status === 401) {
-                window.location.href = "/login";
+                toLogin();
             }
         }
     }).then(data => data);
@@ -27,7 +32,7 @@ export async function post(endpoint: string, body: any) {
             return res.json();
         } else {
             if (res.status === 401) {
-                window.location.href = "/login";
+                toLogin();
             }
         }
     }).then(data => data);

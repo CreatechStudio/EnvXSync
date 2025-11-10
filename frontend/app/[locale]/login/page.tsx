@@ -41,7 +41,13 @@ export default function LoginPage() {
                     if (data.data) {
                         if (data.data.isVerified) {
                             localStorage.setItem("user", JSON.stringify(data.data));
-                            router.push("/project");
+                            const searchParams = new URLSearchParams(window.location.search);
+                            const fromUrl = searchParams.get("from");
+                            if (fromUrl) {
+                                window.location.replace(decodeURI(fromUrl));
+                            } else {
+                                router.push("/project");
+                            }
                         } else {
                             router.push("/activate/email");
                         }
