@@ -19,6 +19,7 @@ import AgentCard from "@/components/AgentCard";
 import EnvEditTable from "@/components/EnvEditTable";
 import SelectableTitle from "@/components/SelectableTitle";
 import useNewEnvVarModal from "@/components/NewEnvVarModal";
+import {clearUrlHash} from "@/utils/network";
 
 export function ProjectDisplay({
     project,
@@ -58,7 +59,7 @@ export function ProjectDisplay({
                     {creator ? creator.name : project.creatorID}
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                    <p className="cursor-pointer text-xl lg:text-2xl font-bold">
+                    <p className="cursor-pointer text-xl lg:text-2xl font-bold select-none" onClick={() => clearUrlHash(true)}>
                         {project.name}
                     </p>
                 </BreadcrumbItem>

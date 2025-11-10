@@ -32,3 +32,10 @@ export async function post(endpoint: string, body: any) {
         }
     }).then(data => data);
 }
+
+export function clearUrlHash(reload?: boolean) {
+    history.pushState(null, document.title, window.location.pathname);
+    if (reload) {
+        window.location.reload();
+    }
+}
