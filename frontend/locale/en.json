@@ -73,5 +73,6 @@
   "Reload on Change": "Reload on Change",
   "Name": "Name",
   "Description": "Description",
-  "Enter your description...": "Enter your description..."
+  "Enter your description...": "Enter your description...",
+  "Some required fields are empty": "Some required fields are empty"
 }

@@ -18,6 +18,7 @@ import {Agent} from "../../../../../lib/types/agent";
 import AgentCard from "@/components/AgentCard";
 import EnvEditTable from "@/components/EnvEditTable";
 import SelectableTitle from "@/components/SelectableTitle";
+import useNewEnvVarModal from "@/components/NewEnvVarModal";
 
 export function ProjectDisplay({
     project,
@@ -30,6 +31,7 @@ export function ProjectDisplay({
     const t = useI18n();
     const [creator, setCreator] = useState<User | null>(null);
     const [agents, setAgents] = useState<Agent[]>([]);
+    const [setNewEnvVarModalOpen, NewEnvVarModal] = useNewEnvVarModal();
 
     useEffect(() => {
         getUserById(project.creatorID).then((userData) => {
@@ -38,6 +40,10 @@ export function ProjectDisplay({
 
         setAgents(getProjectAgents(project.id));
     }, [project]);
+
+    function handleNewEnvVar() {
+        setNewEnvVarModalOpen();
+    }
 
     return (
         <div className="flex flex-col gap-6 lg:gap-12">
@@ -65,11 +71,13 @@ export function ProjectDisplay({
                             {t('Environment Variables')}
                         </h3>
                     </SelectableTitle>
+                    {NewEnvVarModal}
                     <Button
                         aria-label={t('New Environment Variable')}
                         color="primary"
                         startContent={<LuPlus size={20}/>}
                         className="hidden lg:inline-flex"
+                        onPress={handleNewEnvVar}
                     >
                         {t('New Environment Variable')}
                     </Button>
@@ -83,6 +91,7 @@ export function ProjectDisplay({
                             isIconOnly
                             size="md"
                             className="inline-flex lg:hidden"
+                            onPress={handleNewEnvVar}
                         >
                             <LuPlus size={20}/>
                         </Button>

@@ -74,5 +74,6 @@
   "Reload on Change": "修改时重新加载",
   "Name": "名称",
   "Description": "描述",
-  "Enter your description...": "输入你的描述..."
+  "Enter your description...": "输入你的描述...",
+  "Some required fields are empty": "一些必填项为空"
 }
