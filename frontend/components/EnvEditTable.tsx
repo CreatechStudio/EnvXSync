@@ -6,7 +6,7 @@ import {Button} from "@heroui/button";
 import {LuEye, LuEyeClosed, LuPencil, LuPlus, LuSearch, LuTrash2} from "react-icons/lu";
 import {useCurrentLocale, useI18n} from "@/locale/client";
 import {EnvVar} from "../../lib/types/env_var";
-import {useEffect, useRef, useState} from "react";
+import {Fragment, useEffect, useRef, useState} from "react";
 import {getEnvVarSecretValueById} from "@/utils/project";
 import useNewEnvVarModal from "@/components/NewEnvVarModal";
 import {Input} from "@heroui/input";
@@ -158,61 +158,70 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                 <TableColumn align="end">{t('Actions')}</TableColumn>
             </TableHeader>
             <TableBody>
-                {filteredEnvVars.map((envVar, index) => (
-                    <TableRow key={index}>
-                        <TableCell>{envVar.key}</TableCell>
-                        <TableCell className="grow">
-                            {
-                                envVar.isSecret ? (
-                                    showSecret[index] ? (
-                                        secretValues[index] || t('Loading...')
-                                    ) : (
-                                        <div className="rounded-full w-40 blur-sm select-none">
-                                            {envVar.value}
-                                        </div>
-                                    )
-                                ) : (
-                                    envVar.value
-                                )
-                            }
-                        </TableCell>
-                        <TableCell>
-                            <Checkbox isSelected={envVar.isSecret}/>
-                        </TableCell>
-                        <TableCell>{getRelativeTime(envVar.updatedAt, locale)}</TableCell>
-                        <TableCell>
-                            <div className="relative flex flex-row-reverse">
-                                <Tooltip content={t('Delete')}>
-                                    <Button isIconOnly size="sm" variant="light" color="danger">
-                                        <LuTrash2 size={15}/>
-                                    </Button>
-                                </Tooltip>
-                                <Tooltip content={t('Edit')}>
-                                    <Button isIconOnly size="sm" variant="light">
-                                        <LuPencil size={15}/>
-                                    </Button>
-                                </Tooltip>
-                                {
-                                    envVar.isSecret ? (
-                                        showSecret[index] ? (
-                                            <Tooltip content={t('Hide Secret')}>
-                                                <Button isIconOnly size="sm" variant="light" onPress={() => handleHideSecret(index)}>
-                                                    <LuEye size={15}/>
-                                                </Button>
-                                            </Tooltip>
-                                        ) : (
-                                            <Tooltip content={t('View Secret')}>
-                                                <Button isIconOnly size="sm" variant="light" onPress={() => handleShowSecret(index)}>
-                                                    <LuEyeClosed size={15}/>
-                                                </Button>
-                                            </Tooltip>
-                                        )
-                                    ) : null
-                                }
+                <Fragment>
+                    <TableRow key={-1} className={envVars.length === 0 ? "" : "hidden"}>
+                        <TableCell colSpan={5}>
+                            <div className="w-full flex flex-col justify-center items-center p-6 lg:p-12 text-lg text-center">
+                                {t('No environment variables for this project. Try to add a new one now!')}
                             </div>
                         </TableCell>
                     </TableRow>
-                ))}
+                    {filteredEnvVars.map((envVar, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{envVar.key}</TableCell>
+                            <TableCell className="grow">
+                                {
+                                    envVar.isSecret ? (
+                                        showSecret[index] ? (
+                                            secretValues[index] || t('Loading...')
+                                        ) : (
+                                            <div className="rounded-full w-40 blur-sm select-none">
+                                                {envVar.value}
+                                            </div>
+                                        )
+                                    ) : (
+                                        envVar.value
+                                    )
+                                }
+                            </TableCell>
+                            <TableCell>
+                                <Checkbox isSelected={envVar.isSecret}/>
+                            </TableCell>
+                            <TableCell>{getRelativeTime(envVar.updatedAt, locale)}</TableCell>
+                            <TableCell>
+                                <div className="relative flex flex-row-reverse">
+                                    <Tooltip content={t('Delete')}>
+                                        <Button isIconOnly size="sm" variant="light" color="danger">
+                                            <LuTrash2 size={15}/>
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip content={t('Edit')}>
+                                        <Button isIconOnly size="sm" variant="light">
+                                            <LuPencil size={15}/>
+                                        </Button>
+                                    </Tooltip>
+                                    {
+                                        envVar.isSecret ? (
+                                            showSecret[index] ? (
+                                                <Tooltip content={t('Hide Secret')}>
+                                                    <Button isIconOnly size="sm" variant="light" onPress={() => handleHideSecret(index)}>
+                                                        <LuEye size={15}/>
+                                                    </Button>
+                                                </Tooltip>
+                                            ) : (
+                                                <Tooltip content={t('View Secret')}>
+                                                    <Button isIconOnly size="sm" variant="light" onPress={() => handleShowSecret(index)}>
+                                                        <LuEyeClosed size={15}/>
+                                                    </Button>
+                                                </Tooltip>
+                                            )
+                                        ) : null
+                                    }
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </Fragment>
             </TableBody>
         </Table>
     );

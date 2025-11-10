@@ -76,5 +76,6 @@
   "Enter your description...": "Enter your description...",
   "Some required fields are empty": "Some required fields are empty",
   "Search by key...": "Search by key...",
-  "This man is lazy, no description here!": "This man is lazy, no description here!"
+  "This man is lazy, no description here!": "This man is lazy, no description here!",
+  "No environment variables for this project. Try to add a new one now!": "No environment variables for this project. Try to add a new one now!"
 }

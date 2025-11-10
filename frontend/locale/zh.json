@@ -77,5 +77,6 @@
   "Enter your description...": "输入你的描述...",
   "Some required fields are empty": "一些必填项为空",
   "Search by key...": "使用键搜索...",
-  "This man is lazy, no description here!": "这个人很懒，什么描述也没有留下"
+  "This man is lazy, no description here!": "这个人很懒，什么描述也没有留下",
+  "No environment variables for this project. Try to add a new one now!": "这个项目还没有环境变量呢~ 试试新建一个吧！"
 }
