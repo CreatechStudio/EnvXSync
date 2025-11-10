@@ -39,11 +39,11 @@ export default class ProjectRuntime {
     async getProjectDetail(id: string) {
         // TODO: Apply permission logic here
         try {
-            const project = await db
+            return await db
                 .select()
                 .from(projectTable)
                 .where(sql`${projectTable.id} = ${id}`)
-                .then(res => res[0]) as Project;
+                .then(res => res[0]) as Project
         } catch (error) {
             throw "Could not fetch project";
         }
