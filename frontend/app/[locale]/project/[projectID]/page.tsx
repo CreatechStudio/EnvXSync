@@ -20,6 +20,7 @@ import {clearUrlHash} from "@/utils/network";
 import {Tab} from "@heroui/tabs";
 import SelectableTabs, {TabTitle} from "@/components/SelectableTabs";
 import {EnvVar} from "../../../../../lib/types/env_var";
+import ProjectSettings from "@/components/ProjectSettings";
 
 export function ProjectDisplay({
     project,
@@ -96,6 +97,7 @@ export function ProjectDisplay({
                         )}
                     </Tab>
                     <Tab key="settings" title={<TabTitle title={t("Settings")}/>}>
+                        <ProjectSettings project={project}/>
                     </Tab>
                 </SelectableTabs>
             </div>

@@ -6,10 +6,15 @@ import {Button} from "@heroui/button";
 import {LuEye, LuEyeClosed, LuPencil, LuPlus, LuSearch, LuTrash2} from "react-icons/lu";
 import {useCurrentLocale, useI18n} from "@/locale/client";
 import {EnvVar} from "../../lib/types/env_var";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getEnvVarSecretValueById} from "@/utils/project";
 import useNewEnvVarModal from "@/components/NewEnvVarModal";
 import {Input} from "@heroui/input";
+import {Kbd} from "@heroui/kbd";
+import {useHotkeys} from "react-hotkeys-hook";
+import {HotkeysEvent} from "react-hotkeys-hook/packages/react-hotkeys-hook/dist/types";
+import {isMac} from "@react-aria/utils";
+import HotKey from "@/components/HotKey";
 
 function TableTop({
     filterValue,
@@ -20,9 +25,13 @@ function TableTop({
 }) {
     const t = useI18n();
     const [setNewEnvVarModalOpen, NewEnvVarModal] = useNewEnvVarModal();
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
-    function handleClear() {
-        setFilterValue("");
+    function handleFocusSearchInput(keyboardEvent: KeyboardEvent) {
+        keyboardEvent.preventDefault();
+        if (searchInputRef.current) {
+            searchInputRef.current.focus();
+        }
     }
 
     function handleNewEnvVar() {
@@ -40,13 +49,19 @@ function TableTop({
     return (
         <div className="flex flex-row w-full justify-between items-center gap-3 lg:gap-6">
             <Input
-                isClearable
+                ref={searchInputRef}
+                isClearable={false}
                 className="w-full lg:max-w-[40%]"
                 placeholder={t("Search by key...")}
                 startContent={<LuSearch/>}
                 value={filterValue}
-                onClear={() => handleClear()}
                 onValueChange={handleSearchChange}
+                endContent={<HotKey
+                    command={["ctrl"]}
+                    mainKey="k"
+                    callback={handleFocusSearchInput}
+                    className="hidden md:block"
+                />}
             />
 
             <Button
