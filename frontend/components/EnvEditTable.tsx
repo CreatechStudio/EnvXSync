@@ -14,6 +14,10 @@ import HotKey from "@/components/HotKey";
 import useDeleteEnvModal from "@/components/modals/DeleteEnvModal";
 import {Chip} from "@heroui/chip";
 import { MdOutlineNoEncryptionGmailerrorred } from "react-icons/md";
+import {Card, CardBody, CardFooter} from "@heroui/card";
+import {post} from "@/utils/network";
+import {ApiResponse} from "../../lib/types/api";
+import {addToast} from "@heroui/toast";
 
 function TableTop({
     filterValue,
@@ -93,6 +97,151 @@ function TableTop({
     );
 }
 
+function EditEnvVarRow({
+    envVar,
+    onClose
+} : {
+    envVar: EnvVar;
+    onClose: () => void;
+}) {
+    const t = useI18n();
+    const [name, setName] = useState<string>(envVar.key);
+    const [value, setValue] = useState<string>(envVar.isSecret ? "" : envVar.value);
+    const [isSecret, setIsSecret] = useState<boolean>(envVar.isSecret);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [submittable, setSubmittable] = useState<boolean>(false);
+    const [visible, setVisible] = useState<boolean>(false);
+    const [contentHeight, setContentHeight] = useState<number>(0);
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    async function handleSubmit() {
+        if (!submittable) return;
+        setLoading(true);
+        post(`/project/env/update/${envVar.id}`, {
+            key: name,
+            value,
+            isSecret
+        }).then((data: ApiResponse) => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                addToast({
+                    title: data.error || "Failed to update env var",
+                    color: "danger"
+                });
+            }
+            setLoading(false);
+        }).catch(() => {
+            addToast({
+                title: "Failed to update env var",
+                color: "danger"
+            });
+            setLoading(false);
+        });
+    }
+
+    function handleClose() {
+        setVisible(false);
+        setTimeout(() => {
+            onClose();
+        }, 300);
+    }
+
+    useEffect(() => {
+        if (name !== "" && value !== "") {
+            if (!envVar.isSecret) {
+                if (value !== envVar.value) {
+                    setSubmittable(true);
+                }
+                if (isSecret !== envVar.isSecret) {
+                    setSubmittable(true);
+                }
+                if (name !== envVar.key) {
+                    setSubmittable(true);
+                }
+            } else {
+                setSubmittable(true);
+            }
+        }
+    }, [name, value, isSecret]);
+
+    useEffect(() => {
+        if (cardRef.current) {
+            const resizeObserver = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    setContentHeight(entry.contentRect.height);
+                }
+            });
+
+            resizeObserver.observe(cardRef.current);
+
+            return () => {
+                resizeObserver.disconnect();
+            };
+        }
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setVisible(true);
+        }, 10);
+    }, []);
+
+    return (
+        <div
+            className="w-full overflow-hidden transition-all ease-in-out duration-300"
+            style={{
+                maxHeight: visible ? `${contentHeight}px` : 0,
+                opacity: visible ? 1 : 0,
+            }}
+        >
+            <div ref={cardRef}>
+                <div className="flex flex-col w-full justify-center items-center p-5">
+                    <Card className="w-full">
+                        <CardBody>
+                            <div className="flex flex-col gap-3 lg:gap-6 lg:p-3">
+                                <Input
+                                    isRequired
+                                    label={t("Key")}
+                                    type="text"
+                                    value={name}
+                                    onValueChange={setName}
+                                    isDisabled={envVar.isSecret}
+                                />
+                                <Input
+                                    isRequired
+                                    label={t("Value")}
+                                    type="text"
+                                    value={value}
+                                    onValueChange={setValue}
+                                />
+                                <Checkbox isSelected={isSecret} onValueChange={setIsSecret} isDisabled={envVar.isSecret}>
+                                    {t("Is Secret")}
+                                </Checkbox>
+                            </div>
+                        </CardBody>
+                        <CardFooter>
+                            <div className="w-full flex flex-row-reverse gap-3">
+                                <Button
+                                    color="primary"
+                                    onPress={() => {handleSubmit().then(() => handleClose())}}
+                                    isLoading={loading}
+                                    isDisabled={!submittable}
+                                >
+                                    {t("Submit")}
+                                </Button>
+                                <Button color="danger" variant="light" onPress={handleClose} isDisabled={loading}>
+                                    {t("Cancel")}
+                                </Button>
+                            </div>
+                        </CardFooter>
+                    </Card>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], projectID: string}) {
     const t = useI18n();
     const locale = useCurrentLocale();
@@ -103,6 +252,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
     const [filterValue, setFilterValue] = useState<string>("");
     const [deleteEnvVar, setDeleteEnvVar] = useState<EnvVar>();
     const [setDeleteEnvVarModalOpen, DeleteEnvVarModal] = useDeleteEnvModal(deleteEnvVar);
+    const [editIndex, setEditIndex] = useState<number>(-1);
 
     useEffect(() => {
         setShowSecret([...Array(envVars.length).fill(false)]);
@@ -156,6 +306,10 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
         setDeleteEnvVarModalOpen();
     }
 
+    function handleEdit(index: number) {
+        setEditIndex(index);
+    }
+
     return (
         <Table
             topContent={<TableTop filterValue={filterValue} setFilterValue={setFilterValue} projectID={projectID}/>}
@@ -169,7 +323,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
             </TableHeader>
             <TableBody>
                 <Fragment>
-                    <TableRow key={-1} className={envVars.length === 0 ? "" : "hidden"}>
+                    <TableRow key={0} className={envVars.length === 0 ? "" : "hidden"}>
                         <TableCell colSpan={5}>
                             <div className="w-full flex flex-col justify-center items-center p-6 lg:p-12 text-lg text-center">
                                 {t('No environment variables for this project. Try to add a new one now!')}
@@ -178,81 +332,97 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                         </TableCell>
                     </TableRow>
                     {filteredEnvVars.map((envVar, index) => (
-                        <TableRow key={index}>
-                            <TableCell>{envVar.key}</TableCell>
-                            <TableCell className="grow">
-                                {
-                                    envVar.isSecret ? (
-                                        showSecret[index] ? (
-                                            secretValues[index] || t('Loading...')
-                                        ) : (
-                                            <div className="rounded-full w-40 blur-sm select-none">
-                                                {envVar.value}
-                                            </div>
-                                        )
-                                    ) : (
-                                        envVar.value
-                                    )
-                                }
-                            </TableCell>
-                            <TableCell>
-                                {envVar.isSecret ? (
-                                    <Chip
-                                        classNames={{
-                                            base: "bg-linear-to-br from-indigo-500 to-pink-500 border-none",
-                                            content: "drop-shadow-xs shadow-black text-white",
-                                        }}
-                                        className="pl-2.5 select-none"
-                                        startContent={<LuCheck className="text-white"/>}
-                                    >
-                                        {t("Encrypted")}
-                                    </Chip>
-                                ) : (
-                                    <Chip
-                                        classNames={{
-                                            base: "bg-gray-400 dark:bg-gray-600 border-none",
-                                            content: "drop-shadow-xs shadow-black text-white",
-                                        }}
-                                        className="pl-2.5 select-none"
-                                        startContent={<MdOutlineNoEncryptionGmailerrorred className="text-white"/>}
-                                    >
-                                        {t("Not Encrypted")}
-                                    </Chip>
-                                )}
-                            </TableCell>
-                            <TableCell>{getRelativeTime(envVar.updatedAt, locale)}</TableCell>
-                            <TableCell>
-                                <div className="relative flex flex-row-reverse">
-                                    <Tooltip content={t('Delete')}>
-                                        <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => handleDelete(index)}>
-                                            <LuTrash2 size={15}/>
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip content={t('Edit')}>
-                                        <Button isIconOnly size="sm" variant="light">
-                                            <LuPencil size={15}/>
-                                        </Button>
-                                    </Tooltip>
+                        <Fragment>
+                            <TableRow key={index+1}>
+                                <TableCell>{envVar.key}</TableCell>
+                                <TableCell className="grow">
                                     {
                                         envVar.isSecret ? (
                                             showSecret[index] ? (
-                                                <Tooltip content={t('Hide Secret')}>
-                                                    <Button isIconOnly size="sm" variant="light" onPress={() => handleHideSecret(index)}>
-                                                        <LuEye size={15}/>
-                                                    </Button>
-                                                </Tooltip>
+                                                secretValues[index] || t('Loading...')
                                             ) : (
-                                                <Tooltip content={t('View Secret')}>
-                                                    <Button isIconOnly size="sm" variant="light" onPress={() => handleShowSecret(index)}>
-                                                        <LuEyeClosed size={15}/>
-                                                    </Button>
-                                                </Tooltip>
+                                                <div className="rounded-full w-40 blur-sm select-none">
+                                                    {envVar.value}
+                                                </div>
                                             )
-                                        ) : null
+                                        ) : (
+                                            envVar.value
+                                        )
                                     }
-                                </div>
-                            </TableCell>
-                        </TableRow>
+                                </TableCell>
+                                <TableCell>
+                                    {envVar.isSecret ? (
+                                        <Chip
+                                            classNames={{
+                                                base: "bg-linear-to-br from-indigo-500 to-pink-500 border-none",
+                                                content: "drop-shadow-xs shadow-black text-white",
+                                            }}
+                                            className="pl-2.5 select-none"
+                                            startContent={<LuCheck className="text-white"/>}
+                                        >
+                                            {t("Encrypted")}
+                                        </Chip>
+                                    ) : (
+                                        <Chip
+                                            classNames={{
+                                                base: "bg-gray-400 dark:bg-gray-600 border-none",
+                                                content: "drop-shadow-xs shadow-black text-white",
+                                            }}
+                                            className="pl-2.5 select-none"
+                                            startContent={<MdOutlineNoEncryptionGmailerrorred className="text-white"/>}
+                                        >
+                                            {t("Not Encrypted")}
+                                        </Chip>
+                                    )}
+                                </TableCell>
+                                <TableCell>{getRelativeTime(envVar.updatedAt, locale)}</TableCell>
+                                <TableCell>
+                                    <div className="relative flex flex-row-reverse">
+                                        <Tooltip content={t('Delete')}>
+                                            <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => handleDelete(index)}>
+                                                <LuTrash2 size={15}/>
+                                            </Button>
+                                        </Tooltip>
+                                        <Tooltip content={t('Edit')}>
+                                            <Button
+                                                isIconOnly
+                                                size="sm"
+                                                variant="light"
+                                                onPress={() => handleEdit(index)}
+                                                isDisabled={editIndex === index}
+                                            >
+                                                <LuPencil size={15}/>
+                                            </Button>
+                                        </Tooltip>
+                                        {
+                                            envVar.isSecret ? (
+                                                showSecret[index] ? (
+                                                    <Tooltip content={t('Hide Secret')}>
+                                                        <Button isIconOnly size="sm" variant="light" onPress={() => handleHideSecret(index)}>
+                                                            <LuEye size={15}/>
+                                                        </Button>
+                                                    </Tooltip>
+                                                ) : (
+                                                    <Tooltip content={t('View Secret')}>
+                                                        <Button isIconOnly size="sm" variant="light" onPress={() => handleShowSecret(index)}>
+                                                            <LuEyeClosed size={15}/>
+                                                        </Button>
+                                                    </Tooltip>
+                                                )
+                                            ) : null
+                                        }
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+
+                            {index === editIndex && (
+                                <TableRow key={-(index+1)}>
+                                    <TableCell colSpan={5}>
+                                        <EditEnvVarRow envVar={envVar} onClose={() => setEditIndex(-1)}/>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </Fragment>
                     ))}
                 </Fragment>
             </TableBody>
