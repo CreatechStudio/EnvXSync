@@ -189,52 +189,54 @@ function EditEnvVarRow({
 
     return (
         <div
-            className="w-full overflow-hidden transition-all ease-in-out duration-300"
+            className="w-full transition-all ease-in-out duration-300"
             style={{
                 maxHeight: visible ? `${contentHeight}px` : 0,
                 opacity: visible ? 1 : 0,
             }}
         >
             <div ref={cardRef}>
-                <div className="flex flex-col w-full justify-center items-center p-5">
+                <div className="flex flex-col w-full justify-center items-center p-2">
                     <Card className="w-full">
                         <CardBody>
                             <div className="flex flex-col gap-3 lg:gap-6 lg:p-3">
-                                <Input
-                                    isRequired
-                                    label={t("Key")}
-                                    type="text"
-                                    value={name}
-                                    onValueChange={setName}
-                                    isDisabled={envVar.isSecret}
-                                />
-                                <Input
-                                    isRequired
-                                    label={t("Value")}
-                                    type="text"
-                                    value={value}
-                                    onValueChange={setValue}
-                                />
-                                <Checkbox isSelected={isSecret} onValueChange={setIsSecret} isDisabled={envVar.isSecret}>
-                                    {t("Is Secret")}
-                                </Checkbox>
+                                <div className="flex flex-row gap-3 lg:gap-6 w-full justify-center items-center">
+                                    <Input
+                                        isRequired
+                                        label={t("Key")}
+                                        type="text"
+                                        value={name}
+                                        onValueChange={setName}
+                                        isDisabled={envVar.isSecret}
+                                    />
+                                    <Input
+                                        isRequired
+                                        label={t("Value")}
+                                        type="text"
+                                        value={value}
+                                        onValueChange={setValue}
+                                    />
+                                </div>
+                                <div className="flex flex-row gap-3 lg:gap-6 justify-between items-center w-full">
+                                    <Checkbox isSelected={isSecret} onValueChange={setIsSecret} isDisabled={envVar.isSecret}>
+                                        {t("Is Secret")}
+                                    </Checkbox>
+                                    <div className="flex flex-row gap-3 justify-end items-center">
+                                        <Button color="danger" variant="light" onPress={handleClose} isDisabled={loading}>
+                                            {t("Cancel")}
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            onPress={() => {handleSubmit().then(() => handleClose())}}
+                                            isLoading={loading}
+                                            isDisabled={!submittable}
+                                        >
+                                            {t("Submit")}
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         </CardBody>
-                        <CardFooter>
-                            <div className="w-full flex flex-row-reverse gap-3">
-                                <Button
-                                    color="primary"
-                                    onPress={() => {handleSubmit().then(() => handleClose())}}
-                                    isLoading={loading}
-                                    isDisabled={!submittable}
-                                >
-                                    {t("Submit")}
-                                </Button>
-                                <Button color="danger" variant="light" onPress={handleClose} isDisabled={loading}>
-                                    {t("Cancel")}
-                                </Button>
-                            </div>
-                        </CardFooter>
                     </Card>
                 </div>
             </div>
