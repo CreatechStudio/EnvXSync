@@ -22,7 +22,7 @@ export function NewEnvVarContent({
     const [name, setName] = useState("");
     const [value, setValue] = useState("");
     const [loading, setLoading] = useState(false);
-    const [isSecret, setIsSecret] = useState(true);
+    const [isSecret, setIsSecret] = useState(false);
 
     async function handleSubmit() {
         if (!name || !value) {

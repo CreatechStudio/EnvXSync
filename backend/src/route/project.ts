@@ -21,7 +21,7 @@ export const ProjectRoute = new Elysia()
                                 return;
                             } else {
                                 return status(401, "Unauthorized");
-                            };
+                            }
                         } catch (e) {
                             return {
                                 success: false,
@@ -146,6 +146,44 @@ export const ProjectRoute = new Elysia()
                             value: t.String(),
                             isSecret: t.Boolean(),
                             bindTo: t.String(),
+                        })
+                    })
+                    .delete('delete/:id', async ({ env, params }) => {
+                        try {
+                            await env.deleteEnvVar(params.id);
+                            return {
+                                success: true,
+                            } as ApiResponse;
+                        } catch (e) {
+                            return {
+                                success: false,
+                                error: e,
+                            } as ApiResponse;
+                        }
+                    })
+                    .post('update/:id', async ({ env, params, body }) => {
+                        try {
+                            const updatedEnvVar = await env.updateEnvVar(
+                                params.id,
+                                body.key,
+                                body.value,
+                                body.isSecret
+                            );
+                            return {
+                                success: true,
+                                data: updatedEnvVar,
+                            } as ApiResponse<EnvVar>;
+                        } catch (e) {
+                            return {
+                                success: false,
+                                error: e,
+                            } as ApiResponse;
+                        }
+                    }, {
+                        body: t.Object({
+                            key: t.String(),
+                            value: t.String(),
+                            isSecret: t.Boolean(),
                         })
                     })
                     .group('secret', (app) => app

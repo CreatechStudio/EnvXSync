@@ -144,4 +144,59 @@ export default class EnvRuntime {
             throw "Could not create env var";
         }
     }
+
+    async deleteEnvVar(envVarID: string) {
+        try {
+            await db
+                .delete(envVarTable)
+                .where(sql`${envVarTable.id} = ${envVarID}`);
+            let projects = await db
+                .select()
+                .from(projectTable)
+                .where(sql`${projectTable.envVarIDs} @> ARRAY[${envVarID}]::text[]`);
+            for (let project of projects) {
+                let envVarIDs = project.envVarIDs || [];
+                envVarIDs = envVarIDs.filter((id: string) => id !== envVarID);
+                await db
+                    .update(projectTable)
+                    .set({
+                        envVarIDs: envVarIDs,
+                        updatedAt: new Date(),
+                    })
+                    .where(sql`${projectTable.id} = ${project.id}`);
+            }
+        } catch (error) {
+            throw "Could not delete env var";
+        }
+    }
+
+    async updateEnvVar(envVarID: string, key: string, value: string, isSecret: boolean) {
+        let storedValue = value
+        if (isSecret) {
+            if (!EXS_ENCRYPT_SECRET) {
+                throw "Encryption Secret not set";
+            }
+            storedValue = this.encrypt(value);
+        }
+        const currentTime = new Date();
+        try {
+            let updatedEnvVar = await db
+                .update(envVarTable)
+                .set({
+                    key: key,
+                    value: storedValue,
+                    isSecret: isSecret,
+                    updatedAt: currentTime,
+                })
+                .where(sql`${envVarTable.id} = ${envVarID}`)
+                .returning()
+                .then(res => res[0]) as EnvVar;
+            if (updatedEnvVar.isSecret) {
+                updatedEnvVar.value = "";
+            }
+            return updatedEnvVar;
+        } catch (error) {
+            throw "Could not update env var";
+        }
+    }
 }
