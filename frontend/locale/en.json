@@ -81,5 +81,7 @@
   "Enter": "Enter",
   "to make sure you decide to delete it.": "to make sure you decide to delete it.",
   "Delete Environment Variable": "Delete Environment Variable",
-  "Enter here...": "Enter here..."
+  "Enter here...": "Enter here...",
+  "Encrypted": "Encrypted",
+  "Not Encrypted": "Not Encrypted"
 }

@@ -93,7 +93,7 @@ export function NewProjectModalContent({
                                 </div>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose} disabled={loading}>
+                                <Button color="danger" variant="light" onPress={onClose} isDisabled={loading}>
                                     {t("Cancel")}
                                 </Button>
                                 <Button

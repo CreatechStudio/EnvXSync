@@ -55,18 +55,18 @@ export function DeleteEnvModalContent({
                                         placeholder={t("Enter here...")}
                                         onValueChange={setName}
                                         onPaste={(e) => e.preventDefault()}
-                                        disabled={loading}
+                                        isDisabled={loading}
                                     />
                                 </div>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" variant="light" onPress={onClose} disabled={loading}>
+                                <Button color="primary" variant="light" onPress={onClose} isDisabled={loading}>
                                     {t("Cancel")}
                                 </Button>
                                 <Button
                                     color="danger"
                                     onPress={() => {handleSubmit().then(() => onClose())}}
-                                    disabled={!submittable}
+                                    isDisabled={!submittable}
                                     className={submittable ? "cursor-pointer" : "cursor-not-allowed"}
                                     isLoading={loading}
                                 >

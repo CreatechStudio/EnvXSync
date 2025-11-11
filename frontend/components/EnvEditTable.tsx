@@ -3,7 +3,7 @@ import {Checkbox} from "@heroui/checkbox";
 import {getRelativeTime} from "@/utils/time";
 import {Tooltip} from "@heroui/tooltip";
 import {Button} from "@heroui/button";
-import {LuEye, LuEyeClosed, LuPencil, LuPlus, LuSearch, LuTrash2} from "react-icons/lu";
+import {LuCheck, LuEye, LuEyeClosed, LuPencil, LuPlus, LuSearch, LuTrash2} from "react-icons/lu";
 import {useCurrentLocale, useI18n} from "@/locale/client";
 import {EnvVar} from "../../lib/types/env_var";
 import {Fragment, useEffect, useRef, useState} from "react";
@@ -12,6 +12,8 @@ import useNewEnvVarModal from "@/components/modals/NewEnvVarModal";
 import {Input} from "@heroui/input";
 import HotKey from "@/components/HotKey";
 import useDeleteEnvModal from "@/components/modals/DeleteEnvModal";
+import {Chip} from "@heroui/chip";
+import { MdOutlineNoEncryptionGmailerrorred } from "react-icons/md";
 
 function TableTop({
     filterValue,
@@ -194,7 +196,29 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                                 }
                             </TableCell>
                             <TableCell>
-                                <Checkbox isSelected={envVar.isSecret}/>
+                                {envVar.isSecret ? (
+                                    <Chip
+                                        classNames={{
+                                            base: "bg-linear-to-br from-indigo-500 to-pink-500 border-none",
+                                            content: "drop-shadow-xs shadow-black text-white",
+                                        }}
+                                        className="pl-2.5 select-none"
+                                        startContent={<LuCheck className="text-white"/>}
+                                    >
+                                        {t("Encrypted")}
+                                    </Chip>
+                                ) : (
+                                    <Chip
+                                        classNames={{
+                                            base: "bg-gray-400 dark:bg-gray-600 border-none",
+                                            content: "drop-shadow-xs shadow-black text-white",
+                                        }}
+                                        className="pl-2.5 select-none"
+                                        startContent={<MdOutlineNoEncryptionGmailerrorred className="text-white"/>}
+                                    >
+                                        {t("Not Encrypted")}
+                                    </Chip>
+                                )}
                             </TableCell>
                             <TableCell>{getRelativeTime(envVar.updatedAt, locale)}</TableCell>
                             <TableCell>
