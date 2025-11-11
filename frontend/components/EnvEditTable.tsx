@@ -14,7 +14,7 @@ import HotKey from "@/components/HotKey";
 import useDeleteEnvModal from "@/components/modals/DeleteEnvModal";
 import {Chip} from "@heroui/chip";
 import { MdOutlineNoEncryptionGmailerrorred } from "react-icons/md";
-import {Card, CardBody, CardFooter} from "@heroui/card";
+import {Card, CardBody} from "@heroui/card";
 import {post} from "@/utils/network";
 import {ApiResponse} from "../../lib/types/api";
 import {addToast} from "@heroui/toast";
@@ -99,10 +99,12 @@ function TableTop({
 
 function EditEnvVarRow({
     envVar,
-    onClose
+    onClose,
+    projectID
 } : {
     envVar: EnvVar;
     onClose: () => void;
+    projectID: string;
 }) {
     const t = useI18n();
     const [name, setName] = useState<string>(envVar.key);
@@ -120,7 +122,8 @@ function EditEnvVarRow({
         post(`/project/env/update/${envVar.id}`, {
             key: name,
             value,
-            isSecret
+            isSecret,
+            bindTo: projectID
         }).then((data: ApiResponse) => {
             if (data.success) {
                 window.location.reload();
@@ -421,7 +424,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                             {index === editIndex && (
                                 <TableRow key={-(index+1)}>
                                     <TableCell colSpan={5}>
-                                        <EditEnvVarRow envVar={envVar} onClose={() => setEditIndex(-1)}/>
+                                        <EditEnvVarRow envVar={envVar} onClose={() => setEditIndex(-1)} projectID={projectID}/>
                                     </TableCell>
                                 </TableRow>
                             )}
