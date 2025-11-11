@@ -18,8 +18,9 @@ export default function HotKey({
     className?: string
 }) {
     const [cmd, setCmd] = useState<KbdKey[]>(command);
+    const [recordCmd, setRecordCmd] = useState<string[]>(cmd);
 
-    useHotkeys(`${cmd.join('+')}+${mainKey}`, callback);
+    useHotkeys(`${recordCmd.join('+')}+${mainKey}`, callback);
 
     useEffect(() => {
         if (replaceCtrlWithCommand && isMac()) {
@@ -32,6 +33,17 @@ export default function HotKey({
             });
         }
     }, [command]);
+
+    useEffect(() => {
+        if (isMac()) {
+            const newRecordCmd: string[] = [...cmd];
+            const commandIndex = newRecordCmd.indexOf("command");
+            if (commandIndex !== -1) {
+                newRecordCmd[commandIndex] = "meta";
+            }
+            setRecordCmd(newRecordCmd);
+        }
+    }, [cmd]);
 
     return (
         <Kbd keys={cmd} className={className}>{mainKey.toUpperCase()}</Kbd>
