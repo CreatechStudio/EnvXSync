@@ -1,9 +1,9 @@
-import 'dotenv/config';
-import {defineConfig} from "drizzle-kit";
-import {configDotenv} from "dotenv";
+import "dotenv/config";
+import { defineConfig } from "drizzle-kit";
+import { configDotenv } from "dotenv";
 
 configDotenv({
-    path: '.env.development.local'
+    path: ".env.development.local",
 });
 
 // https://orm.drizzle.team/docs/get-started/postgresql-new
@@ -12,18 +12,18 @@ configDotenv({
 // bun run drizzle-kit push
 
 export default defineConfig({
-    out: './drizzle',
+    out: "./drizzle",
     schema: [
-        './src/db/agent.ts',
-        './src/db/env_var.ts',
-        './src/db/group.ts',
-        './src/db/permission.ts',
-        './src/db/project.ts',
-        './src/db/token.ts',
-        './src/db/user.ts',
+        "./src/db/agent.ts",
+        "./src/db/env_var.ts",
+        "./src/db/group.ts",
+        "./src/db/permission.ts",
+        "./src/db/project.ts",
+        "./src/db/token.ts",
+        "./src/db/user.ts",
     ],
-    dialect: 'postgresql',
+    dialect: "postgresql",
     dbCredentials: {
         url: process.env.DATABASE_URL!,
-    }
+    },
 });

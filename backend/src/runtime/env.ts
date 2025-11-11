@@ -1,13 +1,18 @@
-import {db} from "../db";
-import {envVarTable} from "../db/env_var";
-import {sql} from "drizzle-orm";
-import {EnvVar} from "../../../lib/types/env_var";
+import { db } from "../db";
+import { envVarTable } from "../db/env_var";
+import { sql } from "drizzle-orm";
+import { EnvVar } from "../../../lib/types/env_var";
 import dotenv from "dotenv";
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
-import {projectTable} from "../db/project";
+import {
+    createCipheriv,
+    createDecipheriv,
+    createHash,
+    randomBytes,
+} from "crypto";
+import { projectTable } from "../db/project";
 
-dotenv.config()
-const EXS_ENCRYPT_SECRET = process.env.EXS_ENCRYPT_SECRET || undefined
+dotenv.config();
+const EXS_ENCRYPT_SECRET = process.env.EXS_ENCRYPT_SECRET || undefined;
 
 export default class EnvRuntime {
     private static readonly IV_LENGTH = 12; // recommended for GCM
@@ -21,7 +26,10 @@ export default class EnvRuntime {
         const key = this.getKey();
         const iv = randomBytes(EnvRuntime.IV_LENGTH);
         const cipher = createCipheriv("aes-256-gcm", key, iv);
-        const encrypted = Buffer.concat([cipher.update(plain, "utf8"), cipher.final()]);
+        const encrypted = Buffer.concat([
+            cipher.update(plain, "utf8"),
+            cipher.final(),
+        ]);
         const authTag = cipher.getAuthTag();
         // store as: iv | authTag | ciphertext, then base64
         const payload = Buffer.concat([iv, authTag, encrypted]);
@@ -32,21 +40,29 @@ export default class EnvRuntime {
         const key = this.getKey();
         const payload = Buffer.from(payloadB64, "base64");
         const iv = payload.slice(0, EnvRuntime.IV_LENGTH);
-        const authTag = payload.slice(EnvRuntime.IV_LENGTH, EnvRuntime.IV_LENGTH + EnvRuntime.AUTH_TAG_LENGTH);
-        const ciphertext = payload.slice(EnvRuntime.IV_LENGTH + EnvRuntime.AUTH_TAG_LENGTH);
+        const authTag = payload.slice(
+            EnvRuntime.IV_LENGTH,
+            EnvRuntime.IV_LENGTH + EnvRuntime.AUTH_TAG_LENGTH,
+        );
+        const ciphertext = payload.slice(
+            EnvRuntime.IV_LENGTH + EnvRuntime.AUTH_TAG_LENGTH,
+        );
         const decipher = createDecipheriv("aes-256-gcm", key, iv);
         decipher.setAuthTag(authTag);
-        const decrypted = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+        const decrypted = Buffer.concat([
+            decipher.update(ciphertext),
+            decipher.final(),
+        ]);
         return decrypted.toString("utf8");
     }
 
     async getEnvVarByID(envVarID: string) {
         try {
-            let env =  await db
+            let env = (await db
                 .select()
                 .from(envVarTable)
                 .where(sql`${envVarTable.id} = ${envVarID}`)
-                .then(res => res[0]) as EnvVar;
+                .then((res) => res[0])) as EnvVar;
             if (env) {
                 if (env.isSecret) {
                     env.value = "";
@@ -60,12 +76,14 @@ export default class EnvRuntime {
 
     async getBatchEnvVarsByIDs(envVarIDs: string[]) {
         try {
-            let envVars =  await db
+            let envVars = await db
                 .select()
                 .from(envVarTable)
-                .where(sql`${envVarTable.id} IN (${sql.join(envVarIDs, sql`,`)})`)
-                .then(res => res as EnvVar[]);
-            envVars = envVars.map(env => {
+                .where(
+                    sql`${envVarTable.id} IN (${sql.join(envVarIDs, sql`,`)})`,
+                )
+                .then((res) => res as EnvVar[]);
+            envVars = envVars.map((env) => {
                 if (env.isSecret) {
                     env.value = "";
                 }
@@ -79,11 +97,11 @@ export default class EnvRuntime {
 
     async getSecretEnvVarValue(envVarID: string) {
         try {
-            let env =  await db
+            let env = (await db
                 .select()
                 .from(envVarTable)
                 .where(sql`${envVarTable.id} = ${envVarID}`)
-                .then(res => res[0]) as EnvVar;
+                .then((res) => res[0])) as EnvVar;
             if (env) {
                 if (env.isSecret) {
                     return this.decrypt(env.value);
@@ -98,8 +116,13 @@ export default class EnvRuntime {
         }
     }
 
-    async createEnvVar(key: string, value: string, isSecret: boolean, bindTo: string) {
-        let storedValue = value
+    async createEnvVar(
+        key: string,
+        value: string,
+        isSecret: boolean,
+        bindTo: string,
+    ) {
+        let storedValue = value;
         if (isSecret) {
             if (!EXS_ENCRYPT_SECRET) {
                 throw "Encryption Secret not set";
@@ -108,7 +131,7 @@ export default class EnvRuntime {
         }
         const currentTime = new Date();
         try {
-            let newEnvVar = await db
+            let newEnvVar = (await db
                 .insert(envVarTable)
                 .values({
                     key: key,
@@ -118,12 +141,12 @@ export default class EnvRuntime {
                     updatedAt: currentTime,
                 })
                 .returning()
-                .then(res => res[0]) as EnvVar;
+                .then((res) => res[0])) as EnvVar;
             let project = await db
                 .select()
                 .from(projectTable)
                 .where(sql`${projectTable.id} = ${bindTo}`)
-                .then(res => res[0]);
+                .then((res) => res[0]);
             if (!project) {
                 throw "Project not found";
             }
@@ -153,7 +176,9 @@ export default class EnvRuntime {
             let projects = await db
                 .select()
                 .from(projectTable)
-                .where(sql`${projectTable.envVarIDs} @> ARRAY[${envVarID}]::text[]`);
+                .where(
+                    sql`${projectTable.envVarIDs} @> ARRAY[${envVarID}]::text[]`,
+                );
             for (let project of projects) {
                 let envVarIDs = project.envVarIDs || [];
                 envVarIDs = envVarIDs.filter((id: string) => id !== envVarID);
@@ -170,8 +195,13 @@ export default class EnvRuntime {
         }
     }
 
-    async updateEnvVar(envVarID: string, key: string, value: string, isSecret: boolean) {
-        let storedValue = value
+    async updateEnvVar(
+        envVarID: string,
+        key: string,
+        value: string,
+        isSecret: boolean,
+    ) {
+        let storedValue = value;
         if (isSecret) {
             if (!EXS_ENCRYPT_SECRET) {
                 throw "Encryption Secret not set";
@@ -180,7 +210,7 @@ export default class EnvRuntime {
         }
         const currentTime = new Date();
         try {
-            let updatedEnvVar = await db
+            let updatedEnvVar = (await db
                 .update(envVarTable)
                 .set({
                     key: key,
@@ -190,7 +220,7 @@ export default class EnvRuntime {
                 })
                 .where(sql`${envVarTable.id} = ${envVarID}`)
                 .returning()
-                .then(res => res[0]) as EnvVar;
+                .then((res) => res[0])) as EnvVar;
             if (updatedEnvVar.isSecret) {
                 updatedEnvVar.value = "";
             }

@@ -1,5 +1,11 @@
 import nodemailer from "nodemailer";
-import {SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER} from "../index";
+import {
+    SMTP_FROM,
+    SMTP_HOST,
+    SMTP_PASSWORD,
+    SMTP_PORT,
+    SMTP_USER,
+} from "../index";
 
 export class Mailer {
     async sendMail(to: string, subject: string, html: string) {
