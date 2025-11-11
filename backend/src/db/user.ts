@@ -8,6 +8,7 @@ export const userTable = pgTable("user", {
         .$defaultFn(() => randomUUID()),
     name: text("name").notNull(),
     email: text("email").notNull().unique(),
+    isDisabled: boolean("is_disabled").notNull().default(false),
     isVerified: boolean("is_verified").notNull().default(false),
     password: text("password").default(sql`NULL`),
     createdAt: timestamp("created_at").notNull().defaultNow(),

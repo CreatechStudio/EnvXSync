@@ -42,6 +42,31 @@ export default class ProjectRuntime {
             .then((res) => res[0] as Project);
     }
 
+    async updateProject(
+        projectId: string,
+        name: string,
+        description: string,
+        reloadOnChange: boolean,
+        userId: string,
+    ) {
+        let project = await this.getProjectDetail(projectId);
+        if (!project) throw "Project not found";
+        // TODO: Apply permission logic here
+        const currentTime = new Date();
+        return await db
+            .update(projectTable)
+            .set({
+                name: name,
+                description: description,
+                reloadOnChange: reloadOnChange,
+                updatedAt: currentTime,
+                updatedBy: userId,
+            })
+            .where(sql`${projectTable.id} = ${projectId}`)
+            .returning()
+            .then((res) => res[0] as Project);
+    }
+
     async getProjectDetail(id: string) {
         // TODO: Apply permission logic here
         try {

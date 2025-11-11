@@ -2,6 +2,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
+    isDisabled: boolean;
     isVerified: boolean;
     password?: string;
     createdAt: Date;

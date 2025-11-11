@@ -106,6 +106,43 @@ export const ProjectRoute = new Elysia()
                                     reloadOnChange: t.Boolean(),
                                 }),
                             },
+                        )
+                        .post(
+                            "update",
+                            async ({ project, cookie: { auth }, body }) => {
+                                try {
+                                    const decodedId: string = JSON.parse(
+                                        base64.decode(
+                                            auth.toString().split(".")[1],
+                                        ),
+                                    ).id;
+                                    const updatedProject =
+                                        await project.updateProject(
+                                            body.id,
+                                            body.name,
+                                            body.description,
+                                            body.reloadOnChange,
+                                            decodedId,
+                                        );
+                                    return {
+                                        success: true,
+                                        data: updatedProject,
+                                    } as ApiResponse<Project>;
+                                } catch (e) {
+                                    return {
+                                        success: false,
+                                        error: e,
+                                    } as ApiResponse;
+                                }
+                            },
+                            {
+                                body: t.Object({
+                                    id: t.String(),
+                                    name: t.String(),
+                                    description: t.String(),
+                                    reloadOnChange: t.Boolean(),
+                                }),
+                            },
                         ),
                 ),
         ),
