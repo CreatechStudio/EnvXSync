@@ -38,6 +38,23 @@ export async function post(endpoint: string, body: any) {
     }).then(data => data);
 }
 
+export async function deleteReq(endpoint: string) {
+    return fetch(`/api${endpoint}`, {
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => {
+        if (res.ok) {
+            return res.json();
+        } else {
+            if (res.status === 401) {
+                toLogin();
+            }
+        }
+    }).then(data => data);
+}
+
 export function setSearchParams(params: URLSearchParams, reload?: boolean) {
     if (reload) {
         window.location.search = params.toString();

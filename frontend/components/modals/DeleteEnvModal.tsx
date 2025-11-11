@@ -4,6 +4,9 @@ import {EnvVar} from "../../../lib/types/env_var";
 import {Input} from "@heroui/input";
 import {Button} from "@heroui/button";
 import {useI18n} from "@/locale/client";
+import {deleteReq} from "@/utils/network";
+import {ApiResponse} from "../../../lib/types/api";
+import {addToast} from "@heroui/toast";
 
 export function DeleteEnvModalContent({
     envVar,
@@ -24,7 +27,32 @@ export function DeleteEnvModalContent({
     }, [name]);
 
     async function handleSubmit() {
+        if (envVar && submittable) {
+            setLoading(true);
+            deleteReq(`/project/env/delete/${envVar.id}`).then((data: ApiResponse) => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    addToast({
+                        title: data.error || "Failed to delete env var",
+                        color: "danger"
+                    });
+                }
+                setLoading(false);
+            }).catch(() => {
+                addToast({
+                    title: "Failed to delete env var",
+                    color: "danger"
+                });
+                setLoading(false);
+            });
+        }
+    }
 
+    function clearData() {
+        setName("");
+        setSubmittable(false);
+        setLoading(false);
     }
 
     return (
@@ -60,7 +88,7 @@ export function DeleteEnvModalContent({
                                 </div>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" variant="light" onPress={onClose} isDisabled={loading}>
+                                <Button color="primary" variant="light" onPress={() => {clearData(); onClose()}} isDisabled={loading}>
                                     {t("Cancel")}
                                 </Button>
                                 <Button
