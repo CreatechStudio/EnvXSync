@@ -59,6 +59,7 @@ export default class EnvRuntime {
     async _isDuplicateInProject(
         projectID: string,
         key: string,
+        excludeEnvVarID?: string,
     ): Promise<boolean> {
         let projectEnvIDs: string[] = [];
         await db
@@ -85,6 +86,7 @@ export default class EnvRuntime {
             });
         for (let envVar of envVarsInProject) {
             if (envVar.key === key) {
+                if (excludeEnvVarID && envVar.id === excludeEnvVarID) continue;
                 return true;
             }
         }
@@ -240,7 +242,7 @@ export default class EnvRuntime {
         isSecret: boolean,
         bindTo: string,
     ) {
-        if (await this._isDuplicateInProject(bindTo, key)) {
+        if (await this._isDuplicateInProject(bindTo, key, envVarID)) {
             throw "Duplicate env var key in project";
         }
         let storedValue = value;
