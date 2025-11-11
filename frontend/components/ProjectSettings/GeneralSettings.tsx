@@ -7,6 +7,9 @@ import {Project} from "../../../lib/types/project";
 import useDeleteProjectModal from "@/components/modals/DeleteProjectModal";
 import {User} from "../../../lib/types/user";
 import {Switch} from "@heroui/switch";
+import { Textarea } from "@heroui/input";
+import {LuSave} from "react-icons/lu";
+import {removeFromUint8Array} from "next/dist/server/stream-utils/uint8array-helpers";
 
 export default function GeneralSettings({
     project,
@@ -20,6 +23,7 @@ export default function GeneralSettings({
     const t = useI18n();
     const [onProjectDeleteModalOpen, ProjectDeleteModal] = useDeleteProjectModal(project, user);
     const [reloadOnChangeLoading, setReloadOnChangeLoading] = useState<boolean>(false);
+    const [description, setDescription] = useState<string>(project.description);
 
     function handleSelectReloadOnChange(select: boolean) {
         // update select and project
@@ -33,6 +37,10 @@ export default function GeneralSettings({
         }, 1000);
     }
 
+    function handleSaveDescription() {
+        // update new description here
+    }
+
     return (
         <Card className="w-full p-3">
             <CardHeader>
@@ -41,6 +49,25 @@ export default function GeneralSettings({
             <Divider className="mb-2"/>
             <CardBody>
                 <div className="w-full flex flex-col justify-center items-center gap-6">
+                    <div className="w-full flex flex-col justify-start items-start gap-1.5">
+                        <div className="w-full flex flex-row justify-between items-center">
+                            <p className="font-semibold">{t("Description")}</p>
+                            <Button
+                                size="sm"
+                                startContent={<LuSave/>}
+                                variant="light"
+                                onPress={handleSaveDescription}
+                            >
+                                Save
+                            </Button>
+                        </div>
+                        <Textarea
+                            placeholder={t("This man is lazy, no description here!")}
+                            value={description}
+                            onValueChange={setDescription}
+                        />
+                    </div>
+
                     <div className="w-full flex flex-row justify-between items-center">
                         <div className="flex flex-col">
                             <p className="font-semibold">{t("Reload on Change")}</p>
