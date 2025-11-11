@@ -83,5 +83,15 @@
   "Delete Environment Variable": "Delete Environment Variable",
   "Enter here...": "Enter here...",
   "Encrypted": "Encrypted",
-  "Not Encrypted": "Not Encrypted"
+  "Not Encrypted": "Not Encrypted",
+  "General": "General",
+  "Delete this project": "Delete this project",
+  "This project will be completely deleted without any method to recover.": "This project will be completely deleted without any method to recover.",
+  "Delete Project": "Delete Project",
+  "This project will be completely deleted, including all environment variables and settings. You would not have any method to recover it. Please be patient before you delete it.": "This project will be completely deleted, including all environment variables and settings. You would not have any method to recover it. Please be patient before you delete it.",
+  "When environment variables change, agents will automatically redeploy the service.": "When environment variables change, agents will automatically redeploy the service.",
+  "Collaborate": "Collaborate",
+  "User": "User",
+  "Role": "Role",
+  "Owner": "Owner"
 }

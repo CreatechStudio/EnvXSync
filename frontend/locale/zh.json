@@ -84,5 +84,15 @@
   "Delete Environment Variable": "删除环境变量",
   "Enter here...": "在此输入...",
   "Encrypted": "已加密",
-  "Not Encrypted": "未加密"
+  "Not Encrypted": "未加密",
+  "General": "通用",
+  "Delete this project": "删除此项目",
+  "This project will be completely deleted without any method to recover.": "此项目将被彻底删除且没有任何办法复原",
+  "Delete Project": "删除项目",
+  "This project will be completely deleted, including all environment variables and settings. You would not have any method to recover it. Please be patient before you delete it.": "当前项目将被彻底删除，包括所有环境变量以及设置。您将不会有任何方法来恢复它。请确保您在删除前保持冷静。",
+  "When environment variables change, agents will automatically redeploy the service.": "当环境变量改变时，agent 将自动重新部署服务",
+  "Collaborate": "合作",
+  "User": "用户",
+  "Role": "角色",
+  "Owner": "所有者"
 }

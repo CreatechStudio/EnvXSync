@@ -20,27 +20,22 @@ import {clearUrlHash} from "@/utils/network";
 import {Tab} from "@heroui/tabs";
 import SelectableTabs, {TabTitle} from "@/components/SelectableTabs";
 import {EnvVar} from "../../../../../lib/types/env_var";
-import ProjectSettings from "@/components/ProjectSettings";
+import ProjectSettings from "@/components/ProjectSettings/ProjectSettings";
 
 export function ProjectDisplay({
     project,
+    creator,
+    agents,
+    envVars,
+    setProject,
 } : {
-    project: Project,
+    project: Project;
+    creator: User;
+    agents: Agent[];
+    envVars: EnvVar[];
+    setProject: (project: Project) => void;
 }) {
     const t = useI18n();
-    const [creator, setCreator] = useState<User | null>(null);
-    const [agents, setAgents] = useState<Agent[]>([]);
-    const [envVars, setEnvVars] = useState<EnvVar[]>([]);
-
-    useEffect(() => {
-        getUserById(project.creatorID).then((userData) => {
-            setCreator(userData);
-        });
-        setAgents(getProjectAgents(project.id));
-        getEnvVarsByIds(project.envVarIDs).then((vars) => {
-            setEnvVars(vars);
-        });
-    }, [project]);
 
     return (
         <div className="flex flex-col gap-6 lg:gap-12">
@@ -53,7 +48,7 @@ export function ProjectDisplay({
                     }
                 >
                     <BreadcrumbItem>
-                        {creator ? creator.name : project.creatorID}
+                        {creator.name}
                     </BreadcrumbItem>
                     <BreadcrumbItem>
                         <p className="cursor-pointer text-xl lg:text-2xl font-bold select-none" onClick={() => clearUrlHash(true)}>
@@ -99,7 +94,7 @@ export function ProjectDisplay({
                         )}
                     </Tab>
                     <Tab key="settings" title={<TabTitle title={t("Settings")}/>}>
-                        <ProjectSettings project={project}/>
+                        <ProjectSettings project={project} user={creator} setProject={setProject}/>
                     </Tab>
                 </SelectableTabs>
             </div>
@@ -112,6 +107,9 @@ export default function ProjectDetailPage() {
 
     const [project, setProject] = useState<Project | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [creator, setCreator] = useState<User | null>(null);
+    const [agents, setAgents] = useState<Agent[]>([]);
+    const [envVars, setEnvVars] = useState<EnvVar[]>([]);
 
     useEffect(() => {
         getProjectById(projectID).then((projectData) => {
@@ -121,11 +119,29 @@ export default function ProjectDetailPage() {
         });
     }, []);
 
+    useEffect(() => {
+        if (project) {
+            getUserById(project.creatorID).then((userData) => {
+                setCreator(userData);
+            });
+            setAgents(getProjectAgents(project.id));
+            getEnvVarsByIds(project.envVarIDs).then((vars) => {
+                setEnvVars(vars);
+            });
+        }
+    }, [project]);
+
     return (
         <div className="w-full h-full">
             {
-                project ? (
-                    <ProjectDisplay project={project}/>
+                project && creator ? (
+                    <ProjectDisplay
+                        project={project}
+                        creator={creator}
+                        agents={agents}
+                        envVars={envVars}
+                        setProject={setProject}
+                    />
                 ) : (
                     <div className="flex flex-col items-center justify-center gap-4">
                         {

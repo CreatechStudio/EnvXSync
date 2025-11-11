@@ -313,6 +313,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
     return (
         <Table
             topContent={<TableTop filterValue={filterValue} setFilterValue={setFilterValue} projectID={projectID}/>}
+            isHeaderSticky
         >
             <TableHeader>
                 <TableColumn>{t('Key')}</TableColumn>
