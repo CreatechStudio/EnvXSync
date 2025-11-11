@@ -58,7 +58,7 @@ export default function GeneralSettings({
                                 variant="light"
                                 onPress={handleSaveDescription}
                             >
-                                Save
+                                {t("Save")}
                             </Button>
                         </div>
                         <Textarea
