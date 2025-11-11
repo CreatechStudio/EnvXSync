@@ -18,6 +18,7 @@ import {Card, CardBody} from "@heroui/card";
 import {post} from "@/utils/network";
 import {ApiResponse} from "../../lib/types/api";
 import {addToast} from "@heroui/toast";
+import {addMetadataIdToRoute} from "next/dist/server/dev/turbopack-utils";
 
 function TableTop({
     filterValue,
@@ -100,11 +101,13 @@ function TableTop({
 function EditEnvVarRow({
     envVar,
     onClose,
-    projectID
+    projectID,
+    refreshData
 } : {
     envVar: EnvVar;
     onClose: () => void;
     projectID: string;
+    refreshData?: () => void;
 }) {
     const t = useI18n();
     const [name, setName] = useState<string>(envVar.key);
@@ -126,7 +129,11 @@ function EditEnvVarRow({
             bindTo: projectID
         }).then((data: ApiResponse) => {
             if (data.success) {
-                window.location.reload();
+                if (refreshData) {
+                    refreshData()
+                } else {
+                    window.location.reload();
+                }
             } else {
                 addToast({
                     title: data.error || "Failed to update env var",
@@ -247,7 +254,15 @@ function EditEnvVarRow({
     );
 }
 
-export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], projectID: string}) {
+export default function EnvEditTable({
+    envVars,
+    projectID,
+    refreshData
+} : {
+    envVars: EnvVar[],
+    projectID: string,
+    refreshData?: () => void
+}) {
     const t = useI18n();
     const locale = useCurrentLocale();
 
@@ -257,7 +272,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
     const [filterValue, setFilterValue] = useState<string>("");
     const [deleteEnvVar, setDeleteEnvVar] = useState<EnvVar>();
     const [setDeleteEnvVarModalOpen, DeleteEnvVarModal] = useDeleteEnvModal(deleteEnvVar);
-    const [editIndex, setEditIndex] = useState<number>(-1);
+    const [editIndex, setEditIndex] = useState<number[]>([]);
 
     useEffect(() => {
         setShowSecret([...Array(envVars.length).fill(false)]);
@@ -312,13 +327,29 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
     }
 
     function handleEdit(index: number) {
-        setEditIndex(index);
+        setEditIndex((editIndex) => {
+            editIndex.push(index);
+            return [...editIndex];
+        });
+    }
+
+    function handleExitEdit(index: number) {
+        setEditIndex((editIndex) => {
+            const i = editIndex.indexOf(index);
+            if (i !== -1) {
+                editIndex.splice(i, 1);
+                return [...editIndex];
+            } else {
+                return [...editIndex];
+            }
+        });
     }
 
     return (
         <Table
             topContent={<TableTop filterValue={filterValue} setFilterValue={setFilterValue} projectID={projectID}/>}
             isHeaderSticky
+            className="max-h-[80vh] mb-3 md:mb-6"
         >
             <TableHeader>
                 <TableColumn>{t('Key')}</TableColumn>
@@ -395,7 +426,7 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                                                 size="sm"
                                                 variant="light"
                                                 onPress={() => handleEdit(index)}
-                                                isDisabled={editIndex === index}
+                                                isDisabled={editIndex.includes(index)}
                                             >
                                                 <LuPencil size={15}/>
                                             </Button>
@@ -421,10 +452,10 @@ export default function EnvEditTable({envVars, projectID} : {envVars: EnvVar[], 
                                 </TableCell>
                             </TableRow>
 
-                            {index === editIndex && (
+                            {editIndex.includes(index) && (
                                 <TableRow key={-(index+1)}>
                                     <TableCell colSpan={5}>
-                                        <EditEnvVarRow envVar={envVar} onClose={() => setEditIndex(-1)} projectID={projectID}/>
+                                        <EditEnvVarRow envVar={envVar} onClose={() => handleExitEdit(index)} projectID={projectID} refreshData={refreshData}/>
                                     </TableCell>
                                 </TableRow>
                             )}

@@ -28,12 +28,14 @@ export function ProjectDisplay({
     agents,
     envVars,
     setProject,
+    refreshEnvVarsData
 } : {
     project: Project;
     creator: User;
     agents: Agent[];
     envVars: EnvVar[];
     setProject: (project: Project) => void;
+    refreshEnvVarsData?: () => void;
 }) {
     const t = useI18n();
 
@@ -64,7 +66,7 @@ export function ProjectDisplay({
             <div className="flex flex-col w-full gap-3 lg:gap-6">
                 <SelectableTabs defaultTab="envs">
                     <Tab key="envs" title={<TabTitle title={t('Environment Variables')}/>}>
-                        <EnvEditTable envVars={envVars} projectID={project.id}/>
+                        <EnvEditTable envVars={envVars} projectID={project.id} refreshData={refreshEnvVarsData}/>
                     </Tab>
                     <Tab key="agents" title={<TabTitle title={t('Agents')}/>}>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12 w-full">
@@ -111,12 +113,24 @@ export default function ProjectDetailPage() {
     const [agents, setAgents] = useState<Agent[]>([]);
     const [envVars, setEnvVars] = useState<EnvVar[]>([]);
 
-    useEffect(() => {
+    function handleRefreshData() {
         getProjectById(projectID).then((projectData) => {
             if (projectData) {
                 setProject(projectData);
             }
         });
+    }
+
+    function handleRefreshEnvVarsData() {
+        if (project) {
+            getEnvVarsByIds(project.envVarIDs).then((vars) => {
+                setEnvVars(vars);
+            });
+        }
+    }
+
+    useEffect(() => {
+        handleRefreshData();
     }, []);
 
     useEffect(() => {
@@ -125,9 +139,7 @@ export default function ProjectDetailPage() {
                 setCreator(userData);
             });
             setAgents(getProjectAgents(project.id));
-            getEnvVarsByIds(project.envVarIDs).then((vars) => {
-                setEnvVars(vars);
-            });
+            handleRefreshEnvVarsData();
         }
     }, [project]);
 
@@ -141,6 +153,7 @@ export default function ProjectDetailPage() {
                         agents={agents}
                         envVars={envVars}
                         setProject={setProject}
+                        refreshEnvVarsData={handleRefreshEnvVarsData}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center gap-4">
