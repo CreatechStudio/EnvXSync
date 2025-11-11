@@ -56,6 +56,41 @@ export default class EnvRuntime {
         return decrypted.toString("utf8");
     }
 
+    async _isDuplicateInProject(
+        projectID: string,
+        key: string,
+    ): Promise<boolean> {
+        let projectEnvIDs: string[] = [];
+        await db
+            .select()
+            .from(projectTable)
+            .where(sql`${projectTable.id} = ${projectID}`)
+            .then((res) => {
+                if (res[0]) {
+                    projectEnvIDs = res[0].envVarIDs || [];
+                }
+            });
+        let envVarsInProject: EnvVar[] = [];
+        if (projectEnvIDs.length === 0) {
+            return false;
+        }
+        await db
+            .select()
+            .from(envVarTable)
+            .where(
+                sql`${envVarTable.id} IN (${sql.join(projectEnvIDs, sql`,`)})`,
+            )
+            .then((res) => {
+                envVarsInProject = res as EnvVar[];
+            });
+        for (let envVar of envVarsInProject) {
+            if (envVar.key === key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     async getEnvVarByID(envVarID: string) {
         try {
             let env = (await db
@@ -122,6 +157,9 @@ export default class EnvRuntime {
         isSecret: boolean,
         bindTo: string,
     ) {
+        if (await this._isDuplicateInProject(bindTo, key)) {
+            throw "Duplicate env var key in project";
+        }
         let storedValue = value;
         if (isSecret) {
             if (!EXS_ENCRYPT_SECRET) {
@@ -200,7 +238,11 @@ export default class EnvRuntime {
         key: string,
         value: string,
         isSecret: boolean,
+        bindTo: string,
     ) {
+        if (await this._isDuplicateInProject(bindTo, key)) {
+            throw "Duplicate env var key in project";
+        }
         let storedValue = value;
         if (isSecret) {
             if (!EXS_ENCRYPT_SECRET) {

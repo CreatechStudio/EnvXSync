@@ -125,6 +125,7 @@ export const EnvRoute = new Elysia()
                                     body.key,
                                     body.value,
                                     body.isSecret,
+                                    body.bindTo,
                                 );
                                 return {
                                     success: true,
@@ -142,6 +143,7 @@ export const EnvRoute = new Elysia()
                                 key: t.String(),
                                 value: t.String(),
                                 isSecret: t.Boolean(),
+                                bindTo: t.String(),
                             }),
                         },
                     )
