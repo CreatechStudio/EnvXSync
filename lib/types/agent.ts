@@ -12,6 +12,13 @@ export interface Agent {
     projectIDs: string[];
     taskIDs: string[];
     creatorID: string;
+
+    accessKeyHash: string;
+    refreshKeyHash: string;
+    accessKeyExpiresAt: Date;
+    refreshKeyExpiresAt: Date;
+    lastAuthAt?: Date;
+    revoked?: boolean;
 }
 
 export interface AgentTask {

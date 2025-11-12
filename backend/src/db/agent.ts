@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { randomUUID } from "crypto";
 import { sql } from "drizzle-orm";
 
@@ -23,4 +23,12 @@ export const agentTable = pgTable("agent", {
         .array()
         .notNull()
         .default(sql`'{}'::text[]`),
+    creatorID: text("creator_id").notNull(),
+
+    accessKeyHash: text("access_key_hash").default(sql`NULL`),
+    refreshKeyHash: text("refresh_key_hash").default(sql`NULL`),
+    accessKeyExpiresAt: timestamp("access_key_expires_at").default(sql`NULL`),
+    refreshKeyExpiresAt: timestamp("refresh_key_expires_at").default(sql`NULL`),
+    lastAuthAt: timestamp("last_auth_at").default(sql`NULL`),
+    revoked: boolean("revoked").notNull().default(false),
 });
