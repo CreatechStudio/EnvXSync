@@ -29,6 +29,5 @@ export const agentTable = pgTable("agent", {
     refreshKeyHash: text("refresh_key_hash").default(sql`NULL`),
     accessKeyExpiresAt: timestamp("access_key_expires_at").default(sql`NULL`),
     refreshKeyExpiresAt: timestamp("refresh_key_expires_at").default(sql`NULL`),
-    lastAuthAt: timestamp("last_auth_at").default(sql`NULL`),
     revoked: boolean("revoked").notNull().default(false),
 });

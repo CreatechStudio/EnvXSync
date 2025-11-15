@@ -10,6 +10,7 @@ import { TokenRoute } from "./route/token";
 import { ip } from "elysia-ip";
 import { ProjectRoute } from "./route/project";
 import { EnvRoute } from "./route/env";
+import { AgentRoute } from "./route/agent";
 
 dotenv.config();
 export const BASE_URL = process.env.EXS_BASE_URL || "http://localhost:6000";
@@ -38,7 +39,7 @@ const app = new Elysia()
             level: "error",
         }),
     )
-
+    .use(AgentRoute)
     .use(EnvRoute)
     .use(LoginRoute)
     .use(ProjectRoute)

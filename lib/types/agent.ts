@@ -17,8 +17,15 @@ export interface Agent {
     refreshKeyHash: string;
     accessKeyExpiresAt: Date;
     refreshKeyExpiresAt: Date;
-    lastAuthAt?: Date;
     revoked?: boolean;
+}
+
+export interface AgentKeyPair {
+    agentId: string;
+    accessToken: string;
+    refreshToken: string;
+    accessKeyExpiresAt: Date;
+    refreshKeyExpiresAt: Date;
 }
 
 export interface AgentTask {
