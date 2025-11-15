@@ -7,11 +7,11 @@ import { UserRuntime } from "./user";
 export default class ProjectRuntime {
     async fetchUserProjects(userId: string) {
         let allProjects: Project[] = [];
-        const createdProjects = await db
+        const createdProjects = (await db
             .select()
             .from(projectTable)
             .where(sql`${projectTable.creatorID} = ${userId}`)
-            .then((res) => res as Project[]);
+            .then((res) => res)) as Project[];
         allProjects = allProjects.concat(createdProjects);
         // TODO: Apply permission logic here
         return allProjects;
@@ -27,7 +27,7 @@ export default class ProjectRuntime {
         const user = new UserRuntime();
         const isCreatorAdmin = await user.isUserAdmin(userId);
         if (!isCreatorAdmin) throw "Only admin users can create projects";
-        return await db
+        return (await db
             .insert(projectTable)
             .values({
                 name: name,
@@ -39,7 +39,7 @@ export default class ProjectRuntime {
                 updatedBy: userId,
             })
             .returning()
-            .then((res) => res[0] as Project);
+            .then((res) => res[0])) as Project;
     }
 
     async updateProject(
@@ -53,7 +53,7 @@ export default class ProjectRuntime {
         if (!project) throw "Project not found";
         // TODO: Apply permission logic here
         const currentTime = new Date();
-        return await db
+        return (await db
             .update(projectTable)
             .set({
                 name: name,
@@ -64,7 +64,7 @@ export default class ProjectRuntime {
             })
             .where(sql`${projectTable.id} = ${projectId}`)
             .returning()
-            .then((res) => res[0] as Project);
+            .then((res) => res[0])) as Project;
     }
 
     async getProjectDetail(id: string) {
