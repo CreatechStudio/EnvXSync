@@ -7,10 +7,10 @@ import {useI18n} from "@/locale/client";
 import {post} from "@/utils/network";
 import {ApiResponse} from "../../../lib/types/api";
 import {AgentKeyPair} from "../../../lib/types/agent";
-import {Base64} from "js-base64";
 import {Card, CardBody} from "@heroui/card";
 import {LuCopy} from "react-icons/lu";
 import {CopyToClipboard} from "@/utils/clipboard";
+import base64 from "base-64";
 
 export function NewAgentModalContent({
     isOpen,
@@ -66,7 +66,7 @@ export function NewAgentModalContent({
             ak: keyPair.accessToken,
             rk: keyPair.refreshToken
         };
-        const k = Base64.encode(JSON.stringify(authData)).trim();
+        const k = base64.encode(JSON.stringify(authData)).trim();
         setUpCommand(`envxsync up --authKey=\"${k}\"`);
     }
 

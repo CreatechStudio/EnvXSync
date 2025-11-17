@@ -101,7 +101,6 @@ export default class AgentRuntime {
         } catch (e) {
             // @ts-ignore
             if (e.cause?.code === "23505") {
-                console.log("11111111111111111")
                 throw "Agent name already exists";
             }
             throw "Failed to create new agent";
