@@ -98,10 +98,11 @@ export default class AgentRuntime {
                 accessKeyExpiresAt,
                 refreshKeyExpiresAt,
             };
-        } catch {
+        } catch (e) {
             // @ts-ignore
             if (e.cause?.code === "23505") {
-                throw "Email already exists";
+                console.log("11111111111111111")
+                throw "Agent name already exists";
             }
             throw "Failed to create new agent";
         }
