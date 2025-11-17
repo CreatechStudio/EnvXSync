@@ -1,95 +1,9 @@
 import {Project} from "../../lib/types/project";
 import {Agent} from "../../lib/types/agent";
-import {SAMPLE_AGENTS} from "@/utils/agent";
 import {EnvVar} from "../../lib/types/env_var";
 import {get, post} from "@/utils/network";
 import {ApiResponse} from "../../lib/types/api";
 import {addToast} from "@heroui/toast";
-
-const ENV_VAR_SAMPLE_DATA: EnvVar[] = [
-    {
-        id: "1",
-        key: "EXTERNAL_URL",
-        value: "https://test.example.com",
-        isSecret: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    },
-    {
-        id: "2",
-        key: "API_KEY",
-        value: "1234567890abcdef",
-        isSecret: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    },
-    {
-        id: "3",
-        key: "DATABASE_URL",
-        value: "postgres://user:password@localhost:5432/dbname",
-        isSecret: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
-];
-
-const PROJECT_SAMPLE_DATA: Project[] = [
-    {
-        id: "1",
-        name: "Project Alpha",
-        description: "This is the first project.",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        creatorID: "123",
-        envVarIDs: ["1", "2", "3"],
-        reloadOnChange: false,
-        updatedBy: ""
-    },
-    {
-        id: "2",
-        name: "Project Beta",
-        description: "This is the second project.",
-        createdAt: new Date(),
-        updatedAt: new Date('2025-10-01T10:00:00Z'),
-        creatorID: "234",
-        envVarIDs: ["1", "2", "3"],
-        reloadOnChange: false,
-        updatedBy: ""
-    },
-    {
-        id: "3",
-        name: "Project Beta",
-        description: "This is the second project.",
-        createdAt: new Date(),
-        updatedAt: new Date('2025-03-01T10:00:00Z'),
-        creatorID: "234",
-        envVarIDs: [],
-        reloadOnChange: false,
-        updatedBy: ""
-    },
-    {
-        id: "4",
-        name: "Project Beta",
-        description: "This is the second project.",
-        createdAt: new Date(),
-        updatedAt: new Date('2024-10-01T10:00:00Z'),
-        creatorID: "234",
-        envVarIDs: [],
-        reloadOnChange: false,
-        updatedBy: ""
-    },
-    {
-        id: "5",
-        name: "Project Beta",
-        description: "This is the second project.",
-        createdAt: new Date(),
-        updatedAt: new Date('2023-10-01T10:00:00Z'),
-        creatorID: "234",
-        envVarIDs: [],
-        reloadOnChange: false,
-        updatedBy: ""
-    }
-];
 
 export async function getProjects(): Promise<Project[]> {
     return await get("/project/info/list").then((data: ApiResponse<Project[]>) => {
@@ -144,7 +58,7 @@ export async function getProjectById(projectID: string): Promise<Project | null>
 }
 
 export function getProjectAgents(projectID: string): Agent[] {
-    return SAMPLE_AGENTS.filter((agent: Agent) => agent.projectIDs.includes(projectID));
+    return [];
 }
 
 export async function getEnvVarsByIds(ids: string[]): Promise<EnvVar[]> {
@@ -196,5 +110,30 @@ export async function getEnvVarSecretValueById(id: string): Promise<string | nul
             color: "danger"
         });
         return null;
+    });
+}
+
+export async function updateProject(newProject: Project): Promise<boolean> {
+    return await post("/project/info/update", {
+        id: newProject.id,
+        name: newProject.name,
+        description: newProject.description,
+        reloadOnChange: newProject.reloadOnChange,
+    }).then((data: ApiResponse) => {
+        if (data.success) {
+            return true;
+        } else {
+            addToast({
+                title: data.error || "Failed to update project",
+                color: "danger"
+            });
+            return false;
+        }
+    }).catch(() => {
+        addToast({
+            title: "Failed to update project",
+            color: "danger"
+        });
+        return false;
     });
 }

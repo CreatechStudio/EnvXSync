@@ -30,6 +30,7 @@
   "Error": "Error",
   "Status": "Status",
   "Agents": "Agents",
+  "Agent": "Agent",
   "Upgrade to Pro": "Upgrade to Pro",
   "Loading...": "Loading...",
   "Pending": "Pending",
@@ -94,5 +95,15 @@
   "User": "User",
   "Role": "Role",
   "Owner": "Owner",
-  "Save": "Save"
+  "Save": "Save",
+  "Search by agent name...": "Search by agent name...",
+  "No agents. Try to add a new one now!": "No agents. Try to add a new one now!",
+  "New Agent": "Add Agent",
+  "Unnamed Agent": "Unnamed Agent",
+  "Finish": "Finish",
+  "Run this command to connect.": "Run this command to connect.",
+  "Copied to clipboard": "Copied to clipboard",
+  "Failed to copy": "Failed to copy",
+  "IP Address": "IP Address",
+  "Press to Copy": "Press to Copy"
 }

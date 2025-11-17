@@ -1,4 +1,8 @@
-export function getRelativeTime(date: Date, locale: string) {
+export function getRelativeTime(date: Date | string, locale: string) {
+    if (typeof date === 'string') {
+        date = new Date(date);
+    }
+
     const now = new Date();
     const diff = Math.round(now.getTime() - date.getTime());
     if (isNaN(diff)) {

@@ -9,7 +9,6 @@ import {User} from "../../../lib/types/user";
 import {Switch} from "@heroui/switch";
 import { Textarea } from "@heroui/input";
 import {LuSave} from "react-icons/lu";
-import {removeFromUint8Array} from "next/dist/server/stream-utils/uint8array-helpers";
 
 export default function GeneralSettings({
     project,

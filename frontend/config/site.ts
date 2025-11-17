@@ -7,6 +7,10 @@ export const siteConfig = {
         {
             label: "project",
             href: "/project"
+        },
+        {
+            label: "Agent",
+            href: "/agent"
         }
     ],
     navMenuItems: [

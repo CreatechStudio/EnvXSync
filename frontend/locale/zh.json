@@ -30,6 +30,7 @@
   "Error": "错误",
   "Status": "状态",
   "Agents": "Agents",
+  "Agent": "Agent",
   "Add Agent": "添加 Agent",
   "Upgrade to Pro": "升级到专业版",
   "Loading...": "加载中...",
@@ -95,5 +96,15 @@
   "User": "用户",
   "Role": "角色",
   "Owner": "所有者",
-  "Save": "保存"
+  "Save": "保存",
+  "Search by agent name...": "使用 Agent 名称搜索...",
+  "No agents. Try to add a new one now!": "还没有 Agent 呢~ 试试新建一个吧！",
+  "New Agent": "新建 Agent",
+  "Unnamed Agent": "未命名的 Agent",
+  "Finish": "完成",
+  "Run this command to connect.": "运行此命令以完成连接",
+  "Copied to clipboard": "已复制",
+  "Failed to copy": "复制失败",
+  "IP Address": "IP 地址",
+  "Press to Copy": "点击以复制"
 }
