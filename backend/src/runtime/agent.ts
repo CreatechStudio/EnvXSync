@@ -58,6 +58,7 @@ export default class AgentRuntime {
         const user = new UserRuntime();
         const isCreatorAdmin = await user.isUserAdmin(userId);
         if (!isCreatorAdmin) throw "Only admin users can create agents";
+        if (!name || name.trim() === "") throw "Agent name cannot be empty";
 
         const now = new Date();
         const { value: accessKey, hash: accessKeyHash } =
