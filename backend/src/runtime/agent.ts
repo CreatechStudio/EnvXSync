@@ -286,4 +286,19 @@ export default class AgentRuntime {
             throw "Failed to revoke agent";
         }
     }
+
+    async deleteAgent(agentId: string, userId: string) {
+        const user = new UserRuntime();
+        const isUserAdmin = await user.isUserAdmin(userId);
+        if (!isUserAdmin) throw "Only admin users can delete agents";
+
+        try {
+            await db
+                .delete(agentTable)
+                .where(sql`${agentTable.id} = ${agentId}`);
+            return;
+        } catch {
+            throw "Failed to delete agent";
+        }
+    }
 }

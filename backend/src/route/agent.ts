@@ -178,6 +178,32 @@ export const AgentRoute = new Elysia()
                                 }),
                             },
                         )
+                        .delete(
+                            "admin/delete/:id",
+                            async ({ agent, params, cookie: { auth } }) => {
+                                try {
+                                    const decodedId: string = JSON.parse(
+                                        base64.decode(
+                                            auth.toString().split(".")[1],
+                                        ),
+                                    ).id;
+                                    const deleteResult =
+                                        await agent.deleteAgent(
+                                            params.id,
+                                            decodedId,
+                                        );
+                                    return {
+                                        success: true,
+                                        data: deleteResult,
+                                    } as ApiResponse<boolean>;
+                                } catch (e) {
+                                    return {
+                                        success: false,
+                                        error: e,
+                                    } as ApiResponse;
+                                }
+                            },
+                        )
                         .post(
                             "admin/bind",
                             async ({ agent, body, cookie: { auth } }) => {
