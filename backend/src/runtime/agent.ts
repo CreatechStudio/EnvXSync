@@ -44,6 +44,16 @@ export default class AgentRuntime {
         }
     }
 
+    async getAgentByProjectId(projectId: string) {
+        const agents = (await db
+            .select()
+            .from(agentTable)
+            .where(
+                sql`${agentTable.projectIDs} @> ARRAY[${projectId}]`,
+            )) as Agent[];
+        return agents.map((a) => this._redactedAgent(a));
+    }
+
     async newAgent(name: string, userId: string) {
         const user = new UserRuntime();
         const isCreatorAdmin = await user.isUserAdmin(userId);
@@ -181,7 +191,6 @@ export default class AgentRuntime {
                 .where(sql`${agentTable.id} = ${agentId}`)
                 .returning()
                 .then((res) => res[0])) as Agent;
-
             return this._redactedAgent(updated);
         } catch {
             throw "Failed to login agent";

@@ -98,6 +98,20 @@ export const AgentRoute = new Elysia()
                 },
                 (app) =>
                     app
+                        .get("admin/fetch/all", async ({ agent }) => {
+                            try {
+                                const agents = await agent.getAllAgents();
+                                return {
+                                    success: true,
+                                    data: agents,
+                                } as ApiResponse<Agent[]>;
+                            } catch (e) {
+                                return {
+                                    success: false,
+                                    error: e,
+                                } as ApiResponse;
+                            }
+                        })
                         .get("admin/fetch/:id", async ({ agent, params }) => {
                             try {
                                 const agentDetail = await agent.getAgentById(
@@ -114,6 +128,26 @@ export const AgentRoute = new Elysia()
                                 } as ApiResponse;
                             }
                         })
+                        .get(
+                            "admin/fetch/project/:projectId",
+                            async ({ agent, params }) => {
+                                try {
+                                    const agents =
+                                        await agent.getAgentByProjectId(
+                                            params.projectId,
+                                        );
+                                    return {
+                                        success: true,
+                                        data: agents,
+                                    } as ApiResponse<Agent[]>;
+                                } catch (e) {
+                                    return {
+                                        success: false,
+                                        error: e,
+                                    } as ApiResponse;
+                                }
+                            },
+                        )
                         .post(
                             "admin/create",
                             async ({ agent, body, cookie: { auth } }) => {
