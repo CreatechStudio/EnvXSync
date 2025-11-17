@@ -6,7 +6,7 @@ export const agentTable = pgTable("agent", {
     id: text("id")
         .primaryKey()
         .$defaultFn(() => randomUUID()),
-    name: text("name").notNull(),
+    name: text("name").notNull().unique(),
     status: text("status").notNull().default("pending"),
     lastSeen: timestamp("last_seen").notNull().defaultNow(),
     createdAt: timestamp("created_at").notNull().defaultNow(),

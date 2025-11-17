@@ -99,6 +99,10 @@ export default class AgentRuntime {
                 refreshKeyExpiresAt,
             };
         } catch {
+            // @ts-ignore
+            if (e.cause?.code === "23505") {
+                throw "Email already exists";
+            }
             throw "Failed to create new agent";
         }
     }
